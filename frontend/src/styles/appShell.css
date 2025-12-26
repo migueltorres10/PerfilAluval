@@ -13,6 +13,10 @@
   --topbar-h: 64px;
 }
 
+html, body, #root{
+  background: var(--bg);
+}
+
 *{ box-sizing: border-box; }
 html, body{ height: 100%; }
 body{
