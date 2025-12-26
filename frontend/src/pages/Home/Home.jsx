@@ -1,14 +1,17 @@
 import "./home.css";
+import { useNavigate } from "react-router-dom";
+
 
 const actions = [
-  { title: "Novo Cliente", hint: "Criar ficha", icon: "👤" },
-  { title: "Nova Obra", hint: "Abrir obra", icon: "🏗️" },
-  { title: "Carregar Orçamento", hint: "Importar/associar", icon: "📄" },
-  { title: "Registar Compra", hint: "Fatura/guia", icon: "🧾" },
-  { title: "Registar Venda", hint: "Fatura/recibo", icon: "🛒" },
-  { title: "Registar Pagamento", hint: "Saída", icon: "💸" },
-  { title: "Registar Recebimento", hint: "Entrada", icon: "💰" },
+  { title: "Novo Cliente", hint: "Criar ficha", icon: "👤", to: "/clientes/novo" },
+  { title: "Nova Obra", hint: "Abrir obra", icon: "🏗️", to: "/obras/novo" },
+  { title: "Carregar Orçamento", hint: "Importar/associar", icon: "📄", to: "/orcamentos/carregar" },
+  { title: "Registar Compra", hint: "Fatura/guia", icon: "🧾", to: "/compras/registar" },
+  { title: "Registar Venda", hint: "Fatura/recibo", icon: "🛒", to: "/vendas/registar" },
+  { title: "Registar Pagamento", hint: "Saída", icon: "💸", to: "/financeiro/pagamento" },
+  { title: "Registar Recebimento", hint: "Entrada", icon: "💰", to: "/financeiro/recebimento" },
 ];
+
 
 const week = [
   { title: "Montagem — Obra #1024", sub: "Penafiel • 09:00", right: "Seg" },
@@ -28,6 +31,7 @@ const pagar = [
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
   return (
     <div className="homeWrap">
       <div className="homeHeader">
@@ -42,7 +46,7 @@ export default function Home() {
           <button
             key={a.title}
             className="actionBtn"
-            onClick={() => alert(`Ação: ${a.title} (a ligar depois)`)}
+            onClick={() => navigate(a.to)}
             type="button"
           >
             <span className="actionIcon" aria-hidden="true">{a.icon}</span>
