@@ -1,0 +1,309 @@
+﻿dtmn;dt;município_dsg
+0101;01;Águeda
+0102;01;Albergaria-a-Velha
+0103;01;Anadia
+0104;01;Arouca
+0105;01;Aveiro
+0106;01;Castelo de Paiva
+0107;01;Espinho
+0108;01;Estarreja
+0109;01;Santa Maria da Feira
+0110;01;Ílhavo
+0111;01;Mealhada
+0112;01;Murtosa
+0113;01;Oliveira de Azeméis
+0114;01;Oliveira do Bairro
+0115;01;Ovar
+0116;01;São João da Madeira
+0117;01;Sever do Vouga
+0118;01;Vagos
+0119;01;Vale de Cambra
+0201;02;Aljustrel
+0202;02;Almodôvar
+0203;02;Alvito
+0204;02;Barrancos
+0205;02;Beja
+0206;02;Castro Verde
+0207;02;Cuba
+0208;02;Ferreira do Alentejo
+0209;02;Mértola
+0210;02;Moura
+0211;02;Odemira
+0212;02;Ourique
+0213;02;Serpa
+0214;02;Vidigueira
+0301;03;Amares
+0302;03;Barcelos
+0303;03;Braga
+0304;03;Cabeceiras de Basto
+0305;03;Celorico de Basto
+0306;03;Esposende
+0307;03;Fafe
+0308;03;Guimarães
+0309;03;Póvoa de Lanhoso
+0310;03;Terras de Bouro
+0311;03;Vieira do Minho
+0312;03;Vila Nova de Famalicão
+0313;03;Vila Verde
+0314;03;Vizela
+0401;04;Alfândega da Fé
+0402;04;Bragança
+0403;04;Carrazeda de Ansiães
+0404;04;Freixo de Espada à Cinta
+0405;04;Macedo de Cavaleiros
+0406;04;Miranda do Douro
+0407;04;Mirandela
+0408;04;Mogadouro
+0409;04;Torre de Moncorvo
+0410;04;Vila Flor
+0411;04;Vimioso
+0412;04;Vinhais
+0501;05;Belmonte
+0502;05;Castelo Branco
+0503;05;Covilhã
+0504;05;Fundão
+0505;05;Idanha-a-Nova
+0506;05;Oleiros
+0507;05;Penamacor
+0508;05;Proença-a-Nova
+0509;05;Sertã
+0510;05;Vila de Rei
+0511;05;Vila Velha de Ródão
+0601;06;Arganil
+0602;06;Cantanhede
+0603;06;Coimbra
+0604;06;Condeixa-a-Nova
+0605;06;Figueira da Foz
+0606;06;Góis
+0607;06;Lousã
+0608;06;Mira
+0609;06;Miranda do Corvo
+0610;06;Montemor-o-Velho
+0611;06;Oliveira do Hospital
+0612;06;Pampilhosa da Serra
+0613;06;Penacova
+0614;06;Penela
+0615;06;Soure
+0616;06;Tábua
+0617;06;Vila Nova de Poiares
+0701;07;Alandroal
+0702;07;Arraiolos
+0703;07;Borba
+0704;07;Estremoz
+0705;07;Évora
+0706;07;Montemor-o-Novo
+0707;07;Mora
+0708;07;Mourão
+0709;07;Portel
+0710;07;Redondo
+0711;07;Reguengos de Monsaraz
+0712;07;Vendas Novas
+0713;07;Viana do Alentejo
+0714;07;Vila Viçosa
+0801;08;Albufeira
+0802;08;Alcoutim
+0803;08;Aljezur
+0804;08;Castro Marim
+0805;08;Faro
+0806;08;Lagoa
+0807;08;Lagos
+0808;08;Loulé
+0809;08;Monchique
+0810;08;Olhão
+0811;08;Portimão
+0812;08;São Brás de Alportel
+0813;08;Silves
+0814;08;Tavira
+0815;08;Vila do Bispo
+0816;08;Vila Real de Santo António
+0901;09;Aguiar da Beira
+0902;09;Almeida
+0903;09;Celorico da Beira
+0904;09;Figueira de Castelo Rodrigo
+0905;09;Fornos de Algodres
+0906;09;Gouveia
+0907;09;Guarda
+0908;09;Manteigas
+0909;09;Mêda
+0910;09;Pinhel
+0911;09;Sabugal
+0912;09;Seia
+0913;09;Trancoso
+0914;09;Vila Nova de Foz Côa
+1001;10;Alcobaça
+1002;10;Alvaiázere
+1003;10;Ansião
+1004;10;Batalha
+1005;10;Bombarral
+1006;10;Caldas da Rainha
+1007;10;Castanheira de Pêra
+1008;10;Figueiró dos Vinhos
+1009;10;Leiria
+1010;10;Marinha Grande
+1011;10;Nazaré
+1012;10;Óbidos
+1013;10;Pedrógão Grande
+1014;10;Peniche
+1015;10;Pombal
+1016;10;Porto de Mós
+1101;11;Alenquer
+1102;11;Arruda dos Vinhos
+1103;11;Azambuja
+1104;11;Cadaval
+1105;11;Cascais
+1106;11;Lisboa
+1107;11;Loures
+1108;11;Lourinhã
+1109;11;Mafra
+1110;11;Oeiras
+1111;11;Sintra
+1112;11;Sobral de Monte Agraço
+1113;11;Torres Vedras
+1114;11;Vila Franca de Xira
+1115;11;Amadora
+1116;11;Odivelas
+1201;12;Alter do Chão
+1202;12;Arronches
+1203;12;Avis
+1204;12;Campo Maior
+1205;12;Castelo de Vide
+1206;12;Crato
+1207;12;Elvas
+1208;12;Fronteira
+1209;12;Gavião
+1210;12;Marvão
+1211;12;Monforte
+1212;12;Nisa
+1213;12;Ponte de Sor
+1214;12;Portalegre
+1215;12;Sousel
+1301;13;Amarante
+1302;13;Baião
+1303;13;Felgueiras
+1304;13;Gondomar
+1305;13;Lousada
+1306;13;Maia
+1307;13;Marco de Canaveses
+1308;13;Matosinhos
+1309;13;Paços de Ferreira
+1310;13;Paredes
+1311;13;Penafiel
+1312;13;Porto
+1313;13;Póvoa de Varzim
+1314;13;Santo Tirso
+1315;13;Valongo
+1316;13;Vila do Conde
+1317;13;Vila Nova de Gaia
+1318;13;Trofa
+1401;14;Abrantes
+1402;14;Alcanena
+1403;14;Almeirim
+1404;14;Alpiarça
+1405;14;Benavente
+1406;14;Cartaxo
+1407;14;Chamusca
+1408;14;Constância
+1409;14;Coruche
+1410;14;Entroncamento
+1411;14;Ferreira do Zêzere
+1412;14;Golegã
+1413;14;Mação
+1414;14;Rio Maior
+1415;14;Salvaterra de Magos
+1416;14;Santarém
+1417;14;Sardoal
+1418;14;Tomar
+1419;14;Torres Novas
+1420;14;Vila Nova da Barquinha
+1421;14;Ourém
+1501;15;Alcácer do Sal
+1502;15;Alcochete
+1503;15;Almada
+1504;15;Barreiro
+1505;15;Grândola
+1506;15;Moita
+1507;15;Montijo
+1508;15;Palmela
+1509;15;Santiago do Cacém
+1510;15;Seixal
+1511;15;Sesimbra
+1512;15;Setúbal
+1513;15;Sines
+1601;16;Arcos de Valdevez
+1602;16;Caminha
+1603;16;Melgaço
+1604;16;Monção
+1605;16;Paredes de Coura
+1606;16;Ponte da Barca
+1607;16;Ponte de Lima
+1608;16;Valença
+1609;16;Viana do Castelo
+1610;16;Vila Nova de Cerveira
+1701;17;Alijó
+1702;17;Boticas
+1703;17;Chaves
+1704;17;Mesão Frio
+1705;17;Mondim de Basto
+1706;17;Montalegre
+1707;17;Murça
+1708;17;Peso da Régua
+1709;17;Ribeira de Pena
+1710;17;Sabrosa
+1711;17;Santa Marta de Penaguião
+1712;17;Valpaços
+1713;17;Vila Pouca de Aguiar
+1714;17;Vila Real
+1801;18;Armamar
+1802;18;Carregal do Sal
+1803;18;Castro Daire
+1804;18;Cinfães
+1805;18;Lamego
+1806;18;Mangualde
+1807;18;Moimenta da Beira
+1808;18;Mortágua
+1809;18;Nelas
+1810;18;Oliveira de Frades
+1811;18;Penalva do Castelo
+1812;18;Penedono
+1813;18;Resende
+1814;18;Santa Comba Dão
+1815;18;São João da Pesqueira
+1816;18;São Pedro do Sul
+1817;18;Sátão
+1818;18;Sernancelhe
+1819;18;Tabuaço
+1820;18;Tarouca
+1821;18;Tondela
+1822;18;Vila Nova de Paiva
+1823;18;Viseu
+1824;18;Vouzela
+3101;31;Calheta
+3102;31;Câmara de Lobos
+3103;31;Funchal
+3104;31;Machico
+3105;31;Ponta do Sol
+3106;31;Porto Moniz
+3107;31;Ribeira Brava
+3108;31;Santa Cruz
+3109;31;Santana
+3110;31;São Vicente
+3201;32;Porto Santo
+4101;41;Vila do Porto
+4201;42;Lagoa
+4202;42;Nordeste
+4203;42;Ponta Delgada
+4204;42;Povoação
+4205;42;Ribeira Grande
+4206;42;Vila Franca do Campo
+4301;43;Angra do Heroísmo
+4302;43;Praia da Vitória
+4401;44;Santa Cruz da Graciosa
+4501;45;Calheta de São Jorge
+4502;45;Velas
+4601;46;Lajes do Pico
+4602;46;Madalena
+4603;46;São Roque do Pico
+4701;47;Horta
+4801;48;Lajes das Flores
+4802;48;Santa Cruz das Flores
+4901;49;Corvo
