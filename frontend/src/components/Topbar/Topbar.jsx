@@ -1,18 +1,21 @@
 import { useLocation } from "react-router-dom";
 
 const titleByPath = (path) => {
-  const map = {
-    "/": "Home",
-    "/obras": "Obras",
-    "/clientes": "Clientes",
-    "/fornecedores": "Fornecedores",
-    "/funcionarios": "Funcionários",
-    "/artigos-compra": "Artigos/Serviços (Compra)",
-    "/artigos-venda": "Artigos/Serviços (Venda)",
-    "/producao": "Produção",
-    "/montagens-entregas": "Montagens/Entregas",
-  };
-  return map[path] || "Página";
+  if (path === "/") return "Home";
+  if (path === "/clientes") return "Clientes";
+  if (path === "/clientes/novo") return "Novo Cliente";
+  if (path.startsWith("/clientes/") && path.endsWith("/eliminar")) return "Eliminar Cliente";
+  if (path.startsWith("/clientes/")) return "Editar Cliente";
+
+  if (path === "/obras") return "Obras";
+  if (path === "/fornecedores") return "Fornecedores";
+  if (path === "/funcionarios") return "Funcionários";
+  if (path === "/artigos-compra") return "Artigos/Serviços (Compra)";
+  if (path === "/artigos-venda") return "Artigos/Serviços (Venda)";
+  if (path === "/producao") return "Produção";
+  if (path === "/montagens-entregas") return "Montagens/Entregas";
+
+  return "Página";
 };
 
 export default function TopBar({ onOpenMobileNav, isCollapsed, onToggleCollapse }) {
