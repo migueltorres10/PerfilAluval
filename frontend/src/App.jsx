@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import AppLayout from "./layouts/AppLayout";
+
 import Home from "./pages/Home";
 import Obras from "./pages/Obras";
 import Clientes from "./pages/Clientes";
@@ -15,18 +17,18 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/home" element={<Home />} />
 
-        <Route path="/obras" element={<Obras />} />
-        <Route path="/clientes" element={<Clientes />} />
-        <Route path="/fornecedores" element={<Fornecedores />} />
-        <Route path="/funcionarios" element={<Funcionarios />} />
-
-        <Route path="/artigos-compra" element={<ArtigosCompra />} />
-        <Route path="/artigos-venda" element={<ArtigosVenda />} />
-
-        <Route path="/producao" element={<Producao />} />
-        <Route path="/montagens-entregas" element={<MontagensEntregas />} />
+        <Route element={<AppLayout />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/obras" element={<Obras />} />
+          <Route path="/clientes" element={<Clientes />} />
+          <Route path="/fornecedores" element={<Fornecedores />} />
+          <Route path="/funcionarios" element={<Funcionarios />} />
+          <Route path="/artigos-compra" element={<ArtigosCompra />} />
+          <Route path="/artigos-venda" element={<ArtigosVenda />} />
+          <Route path="/producao" element={<Producao />} />
+          <Route path="/montagens-entregas" element={<MontagensEntregas />} />
+        </Route>
 
         <Route path="*" element={<div style={{ padding: 16 }}>Página não encontrada</div>} />
       </Routes>

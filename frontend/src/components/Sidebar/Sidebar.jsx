@@ -1,34 +1,71 @@
 import { NavLink } from "react-router-dom";
 
-const linkStyle = ({ isActive }) => ({
-  padding: "10px 12px",
-  borderRadius: 10,
-  textDecoration: "none",
-  color: "#111",
-  background: isActive ? "#e8eefc" : "transparent",
-  display: "block",
-});
+const navItems = [
+  { to: "/home", label: "Home", icon: "🏠" },
+  { to: "/obras", label: "Obras", icon: "🏗️" },
+  { to: "/clientes", label: "Clientes", icon: "👤" },
+  { to: "/fornecedores", label: "Fornecedores", icon: "🚚" },
+  { to: "/funcionarios", label: "Funcionários", icon: "🧑‍🏭" },
+  { to: "/artigos-compra", label: "Artigos/Serviços (Compra)", icon: "🧾" },
+  { to: "/artigos-venda", label: "Artigos/Serviços (Venda)", icon: "🛒" },
+  { to: "/producao", label: "Produção", icon: "🏭" },
+  { to: "/montagens-entregas", label: "Montagens/Entregas", icon: "📦" },
+];
 
-export default function Sidebar() {
+export default function Sidebar({
+  variant, // "desktop" | "mobile"
+  isCollapsed,
+  onToggleCollapse,
+  onNavigate,
+}) {
   return (
-    <aside
-      style={{
-        width: 240,
-        borderRight: "1px solid #eee",
-        padding: 16,
-        background: "#fafafa",
-      }}
-    >
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontWeight: 800, fontSize: 16 }}>PERFIL ALUVAL</div>
-        <div style={{ fontSize: 12, opacity: 0.7 }}>Gestão</div>
+    <div className={`sidebar ${variant}`}>
+      <div className="sidebarHeader">
+        <div className="brand">
+          <div className="brandMark">PA</div>
+          {!isCollapsed && <div className="brandText">Perfil Aluval</div>}
+        </div>
+
+        {variant === "desktop" && (
+          <button className="iconBtn" onClick={onToggleCollapse} title="Colapsar/Expandir">
+            {isCollapsed ? "»" : "«"}
+          </button>
+        )}
+
+        {variant === "mobile" && (
+          <button className="iconBtn" onClick={onNavigate} title="Fechar">
+            ✕
+          </button>
+        )}
       </div>
 
-      <nav style={{ display: "grid", gap: 6 }}>
-        <NavLink to="/" end style={linkStyle}>
-          Rosto
-        </NavLink>
+      <nav className="sidebarNav">
+        {navItems.map((it) => (
+          <NavLink
+            key={it.to}
+            to={it.to}
+            className={({ isActive }) =>
+              `navItem ${isActive ? "active" : ""} ${isCollapsed ? "collapsed" : ""}`
+            }
+            onClick={onNavigate}
+          >
+            <span className="navIcon" aria-hidden="true">
+              {it.icon}
+            </span>
+            {!isCollapsed && <span className="navLabel">{it.label}</span>}
+          </NavLink>
+        ))}
       </nav>
-    </aside>
+
+      <div className="sidebarFooter">
+        {!isCollapsed ? (
+          <div className="footerHint">v0.1 • Shell</div>
+        ) : (
+          <div className="footerHint" title="v0.1 • Shell">
+            •
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
