@@ -1,28 +1,35 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import Home from "./pages/Home";
+import Obras from "./pages/Obras";
+import Clientes from "./pages/Clientes";
+import Fornecedores from "./pages/Fornecedores";
+import Funcionarios from "./pages/Funcionarios";
+import ArtigosCompra from "./pages/ArtigosCompra";
+import ArtigosVenda from "./pages/ArtigosVenda";
+import Producao from "./pages/Producao";
+import MontagensEntregas from "./pages/MontagensEntregas";
 
 export default function App() {
-  const [health, setHealth] = useState(null);
-  const [err, setErr] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:4000/api/health")
-      .then((r) => r.json())
-      .then(setHealth)
-      .catch((e) => setErr(String(e)));
-  }, []);
-
   return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h1>Perfil Aluval</h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/home" element={<Home />} />
 
-      <h2>API Health</h2>
-      {err && <p style={{ color: "red" }}>Erro: {err}</p>}
-      {!err && !health && <p>A carregar...</p>}
-      {health && (
-        <pre style={{ background: "#f4f4f4", padding: 12 }}>
-          {JSON.stringify(health, null, 2)}
-        </pre>
-      )}
-    </div>
+        <Route path="/obras" element={<Obras />} />
+        <Route path="/clientes" element={<Clientes />} />
+        <Route path="/fornecedores" element={<Fornecedores />} />
+        <Route path="/funcionarios" element={<Funcionarios />} />
+
+        <Route path="/artigos-compra" element={<ArtigosCompra />} />
+        <Route path="/artigos-venda" element={<ArtigosVenda />} />
+
+        <Route path="/producao" element={<Producao />} />
+        <Route path="/montagens-entregas" element={<MontagensEntregas />} />
+
+        <Route path="*" element={<div style={{ padding: 16 }}>Página não encontrada</div>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
