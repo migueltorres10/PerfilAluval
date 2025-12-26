@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 
 const titleByPath = (path) => {
   const map = {
-    "/home": "Home",
+    "/": "Home",
     "/obras": "Obras",
     "/clientes": "Clientes",
     "/fornecedores": "Fornecedores",
