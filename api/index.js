@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+console.log(">> API entrypoint: api/index.js");
+
 
 const app = express();
 app.use(cors());
@@ -19,6 +21,9 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
+const clientesRouter = require("./routes/clientes.routes");
+console.log(">> Mounting /api/clientes routes");
+app.use("/api/clientes", clientesRouter);
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
