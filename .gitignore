@@ -18,3 +18,6 @@ frontend/.vite/
 # OS/Editor
 .DS_Store
 .vscode/
+
+# Ficheiros Acessórios
+Ficheiros Acessórios/
