@@ -28,6 +28,20 @@ export const paisesApi = {
   list: () => request("/api/paises"),
 };
 
+export const distritosApi = {
+  list: () => request("/api/distritos"),
+};
+
+export const concelhosApi = {
+  listByDistrito: (codDistrito) =>
+    request(`/api/concelhos?distrito=${encodeURIComponent(codDistrito)}`),
+};
+
+export const codigosPostaisApi = {
+  suggest: (q) =>
+    request(`/api/codigos-postais?q=${encodeURIComponent(q)}`),
+};
+
 export const clientesApi = {
   create: (payload) =>
     request("/api/clientes", {
