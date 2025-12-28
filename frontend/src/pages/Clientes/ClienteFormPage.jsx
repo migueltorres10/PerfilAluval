@@ -72,6 +72,7 @@ function ClienteCreateView({ navigate }) {
   const [saving, setSaving] = useState(false);
   const [apiError, setApiError] = useState("");
 
+  // 1) Países (1x)
   useEffect(() => {
     let alive = true;
 
@@ -84,13 +85,14 @@ function ClienteCreateView({ navigate }) {
         const safeList = Array.isArray(list) ? list : [];
         setPaises(safeList);
 
-        // Se Portugal (427) não existir por algum motivo, escolhe o primeiro ativo
-        const hasPortugal = safeList.some((p) => Number(p.PaisID) === DEFAULT_PORTUGAL_ID);
+        const hasPortugal = safeList.some(
+          (p) => Number(p.PaisID) === DEFAULT_PORTUGAL_ID
+        );
         if (!hasPortugal && safeList.length) {
           setForm((f) => ({ ...f, paisId: Number(safeList[0].PaisID) }));
         }
       } catch {
-        // fallback: mantém Portugal por default e deixa lista vazia
+        if (alive) setPaises([]);
       } finally {
         if (alive) setLoadingPaises(false);
       }
@@ -102,13 +104,73 @@ function ClienteCreateView({ navigate }) {
     };
   }, []);
 
+  // 2) Distritos (1x)
+  useEffect(() => {
+    let alive = true;
+
+    async function loadDistritos() {
+      setLoadingDistritos(true);
+      try {
+        const list = await distritosApi.list();
+        if (!alive) return;
+        setDistritos(Array.isArray(list) ? list : []);
+      } catch {
+        if (alive) setDistritos([]);
+      } finally {
+        if (alive) setLoadingDistritos(false);
+      }
+    }
+
+    loadDistritos();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // 3) Concelhos (quando muda o distrito)
+  useEffect(() => {
+    let alive = true;
+
+    async function loadConcelhos() {
+      const d = form.codDistrito;
+      if (!d) {
+        setConcelhos([]);
+        return;
+      }
+
+      setLoadingConcelhos(true);
+      try {
+        const list = await concelhosApi.listByDistrito(d);
+        if (!alive) return;
+        setConcelhos(Array.isArray(list) ? list : []);
+      } catch {
+        if (alive) setConcelhos([]);
+      } finally {
+        if (alive) setLoadingConcelhos(false);
+      }
+    }
+
+    loadConcelhos();
+    return () => {
+      alive = false;
+    };
+  }, [form.codDistrito]);
+
+
   function onChange(e) {
     const { name, value } = e.target;
-    setForm((f) => ({
-      ...f,
-      [name]: name === "paisId" ? Number(value) : value,
-    }));
+
+    setForm((f) => {
+      if (name === "paisId") return { ...f, paisId: Number(value) };
+
+      if (name === "codDistrito") {
+        return { ...f, codDistrito: value, codConcelho: "" };
+      }
+
+      return { ...f, [name]: value };
+    });
   }
+
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -272,6 +334,39 @@ function ClienteCreateView({ navigate }) {
             placeholder="Ex: Lisboa"
           />
         </FormField>
+
+        <FormField label="Distrito" error={errors.codDistrito}>
+          <SelectInput
+            name="codDistrito"
+            value={form.codDistrito}
+            onChange={onChange}
+            disabled={loadingDistritos}
+          >
+            <option value="">— Selecionar —</option>
+            {distritos.map((d) => (
+              <option key={d.CodDistrito} value={d.CodDistrito}>
+                {d.NomeDistrito}
+              </option>
+            ))}
+          </SelectInput>
+        </FormField>
+
+        <FormField label="Concelho" error={errors.codConcelho}>
+          <SelectInput
+            name="codConcelho"
+            value={form.codConcelho}
+            onChange={onChange}
+            disabled={!form.codDistrito || loadingConcelhos}
+          >
+            <option value="">— Selecionar —</option>
+            {concelhos.map((c) => (
+              <option key={c.CodConcelho} value={c.CodConcelho}>
+                {c.NomeConcelho}
+              </option>
+            ))}
+          </SelectInput>
+        </FormField>
+
 
         <FormField label="Código Postal" error={errors.numCodPostal || errors.extCodPostal}>
           <div style={{ display: "flex", gap: 8 }}>
