@@ -27,7 +27,8 @@ app.use("/api/paises", paisesRouter);
 const distritosRouter = require("./routes/distritos.routes");
 app.use("/api/distritos", distritosRouter);
 
-
+const concelhosRouter = require("./routes/concelhos.routes");
+app.use("/api/concelhos", concelhosRouter);
 
 const clientesRouter = require("./routes/clientes.routes");
 app.use("/api/clientes", clientesRouter);
