@@ -195,6 +195,115 @@ function ClienteCreateView({ navigate }) {
           />
         </FormField>
 
+        <FormField label="Nome Comercial" error={errors.nomeComercial}>
+          <TextInput
+            name="nomeComercial"
+            value={form.nomeComercial}
+            onChange={onChange}
+            placeholder="Ex: Aluval"
+          />
+        </FormField>
+
+        <FormField label="NIF" error={errors.nif}>
+          <TextInput
+            name="nif"
+            value={form.nif}
+            onChange={onChange}
+            placeholder="Número de Identificação Fiscal"
+          />
+        </FormField>
+
+        <FormField label="Email" error={errors.email}>
+          <TextInput
+            name="email"
+            value={form.email}
+            onChange={onChange}
+            placeholder="Ex: miguel@aluval.pt"
+          />
+        </FormField>
+
+        <FormField label="Telefone" error={errors.telefone}>
+          <TextInput
+            name="telefone"
+            value={form.telefone}
+            onChange={onChange}
+            placeholder="Ex: +351 234 567 890"
+          />
+        </FormField>
+
+        <FormField label="Telemóvel" error={errors.telemovel}>
+          <TextInput
+            name="telemovel"
+            value={form.telemovel}
+            onChange={onChange}
+            placeholder="Ex: +351 912 345 678"
+          />
+        </FormField>
+
+        <FormField label="Morada Linha 1" error={errors.moradaLinha1}>
+          <TextInput
+            name="moradaLinha1"
+            value={form.moradaLinha1}
+            onChange={onChange}
+            placeholder="Ex: Rua da Alameda, 123"
+          />
+        </FormField>
+
+        <FormField label="Morada Linha 2" error={errors.moradaLinha2}>
+          <TextInput
+            name="moradaLinha2"
+            value={form.moradaLinha2}
+            onChange={onChange}
+            placeholder="Ex: 4º Andar, Apartamento 5"
+          />
+        </FormField>
+
+        <FormField label="Localidade" error={errors.nomeLocalidade}>
+          <TextInput
+            name="nomeLocalidade"
+            value={form.nomeLocalidade}
+            onChange={onChange}
+            placeholder="Ex: Lisboa"
+          />
+        </FormField>
+
+        <FormField label="Código Postal" error={errors.numCodPostal || errors.extCodPostal}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <TextInput
+              name="numCodPostal"
+              value={form.numCodPostal}
+              onChange={onChange}
+              placeholder="1234"
+            />
+            <TextInput
+              name="extCodPostal"
+              value={form.extCodPostal}
+              onChange={onChange}
+              placeholder="567"
+            />
+          </div>
+        </FormField>
+
+        <FormField label="Observações" error={errors.observacoes}>
+          <textarea
+            name="observacoes"
+            value={form.observacoes}
+            onChange={onChange}
+            placeholder="Notas internas…"
+            style={{
+              padding: "10px 12px",
+              borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "rgba(255,255,255,0.06)",
+              color: "rgba(255,255,255,0.92)",
+              outline: "none",
+              minHeight: 90,
+              resize: "vertical",
+            }}
+          />
+        </FormField>
+
+
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <button type="submit" disabled={saving}>
             {saving ? "A criar..." : "Criar Cliente"}
