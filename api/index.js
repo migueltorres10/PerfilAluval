@@ -21,8 +21,10 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
+const paisesRouter = require("./routes/paises.routes");
+app.use("/api/paises", paisesRouter);
+
 const clientesRouter = require("./routes/clientes.routes");
-console.log(">> Mounting /api/clientes routes");
 app.use("/api/clientes", clientesRouter);
 
 const port = process.env.PORT || 4000;
