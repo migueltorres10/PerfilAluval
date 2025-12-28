@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { clientesApi, paisesApi } from "../../services/api";
+import { clientesApi, paisesApi, distritosApi, concelhosApi, codigosPostaisApi } from "../../services/api";
 import { FormField } from "../../components/ui/FormField";
 import { TextInput, SelectInput } from "../../components/ui/Input";
 import { AlertBox } from "../../components/ui/AlertBox";
@@ -61,6 +61,12 @@ function ClienteCreateView({ navigate }) {
 
   const [paises, setPaises] = useState([]);
   const [loadingPaises, setLoadingPaises] = useState(true);
+
+  const [distritos, setDistritos] = useState([]);
+  const [loadingDistritos, setLoadingDistritos] = useState(true);
+
+  const [concelhos, setConcelhos] = useState([]);
+  const [loadingConcelhos, setLoadingConcelhos] = useState(false);
 
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
