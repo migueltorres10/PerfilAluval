@@ -24,6 +24,11 @@ app.get("/api/health", async (req, res) => {
 const paisesRouter = require("./routes/paises.routes");
 app.use("/api/paises", paisesRouter);
 
+const distritosRouter = require("./routes/distritos.routes");
+app.use("/api/distritos", distritosRouter);
+
+
+
 const clientesRouter = require("./routes/clientes.routes");
 app.use("/api/clientes", clientesRouter);
 
