@@ -1,14 +1,13 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { clientesApi, paisesApi } from "../../services/api";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-function validate(form) {
-  const errors = {};
-  if (!form.nome.trim()) errors.nome = "Nome é obrigatório.";
-  if (!["E", "P"].includes(form.tipoCliente)) errors.tipoCliente = "Escolhe E (Empresa) ou P (Particular).";
-  if (!form.paisId) errors.paisId = "País é obrigatório.";
-  return errors;
-}
+import { clientesApi, paisesApi } from "../../services/api";
+import { FormField } from "../../components/ui/FormField";
+import { TextInput, SelectInput } from "../../components/ui/Input";
+import { AlertBox } from "../../components/ui/AlertBox";
+import { validateClienteForm } from "./cliente.validation";
+
+const DEFAULT_PORTUGAL_ID = 427;
 
 export default function ClienteFormPage() {
   const navigate = useNavigate();
@@ -21,10 +20,29 @@ export default function ClienteFormPage() {
     return "edit";
   }, [id, location.pathname]);
 
+  // Por agora só implementamos create (edit/delete depois, em commits pequenos)
+  if (mode !== "create") {
+    return (
+      <div style={{ padding: 16 }}>
+        <h1 style={{ margin: 0 }}>Clientes</h1>
+        <p style={{ opacity: 0.8 }}>
+          Modo <b>{mode}</b> (ID {id}) — a seguir ligamos editar/eliminar.
+        </p>
+        <button type="button" onClick={() => navigate("/clientes")}>
+          Voltar
+        </button>
+      </div>
+    );
+  }
+
+  return <ClienteCreateView navigate={navigate} />;
+}
+
+function ClienteCreateView({ navigate }) {
   const [form, setForm] = useState({
     tipoCliente: "E",
     nome: "",
-    paisId: 427, // Portugal por default
+    paisId: DEFAULT_PORTUGAL_ID,
   });
 
   const [paises, setPaises] = useState([]);
@@ -43,15 +61,16 @@ export default function ClienteFormPage() {
         const list = await paisesApi.list();
         if (!alive) return;
 
-        setPaises(list || []);
+        const safeList = Array.isArray(list) ? list : [];
+        setPaises(safeList);
 
-        // Se Portugal 427 não existir por algum motivo, escolhe o primeiro país disponível
-        const hasPortugal = (list || []).some((p) => Number(p.PaisID) === 427);
-        if (!hasPortugal && (list || []).length) {
-          setForm((f) => ({ ...f, paisId: Number(list[0].PaisID) }));
+        // Se Portugal (427) não existir por algum motivo, escolhe o primeiro ativo
+        const hasPortugal = safeList.some((p) => Number(p.PaisID) === DEFAULT_PORTUGAL_ID);
+        if (!hasPortugal && safeList.length) {
+          setForm((f) => ({ ...f, paisId: Number(safeList[0].PaisID) }));
         }
-      } catch (e) {
-        // Mantém o default 427 e deixa a lista vazia (aparece "Portugal" fallback)
+      } catch {
+        // fallback: mantém Portugal por default e deixa lista vazia
       } finally {
         if (alive) setLoadingPaises(false);
       }
@@ -75,7 +94,7 @@ export default function ClienteFormPage() {
     e.preventDefault();
     setApiError("");
 
-    const v = validate(form);
+    const v = validateClienteForm(form);
     setErrors(v);
     if (Object.keys(v).length) return;
 
@@ -98,75 +117,37 @@ export default function ClienteFormPage() {
     }
   }
 
-  // Por agora, só criamos (primeiro cliente)
-  if (mode !== "create") {
-    return (
-      <div style={{ padding: 16 }}>
-        <h1 style={{ margin: 0 }}>Clientes</h1>
-        <p style={{ opacity: 0.8 }}>
-          Modo <b>{mode}</b> (ID {id}) — a seguir ligamos editar/eliminar.
-        </p>
-        <button type="button" onClick={() => navigate("/clientes")}>
-          Voltar
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div style={{ padding: 16, maxWidth: 700 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+      <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
           <h1 style={{ margin: 0 }}>Novo Cliente</h1>
-          <p style={{ margin: "6px 0 0 0", opacity: 0.75 }}>Primeiro registo (criar)</p>
+          <p style={{ margin: "6px 0 0 0", opacity: 0.75 }}>Criar ficha de cliente</p>
         </div>
         <button type="button" onClick={() => navigate("/clientes")}>
           Voltar
         </button>
-      </div>
+      </header>
 
-      {apiError && (
-        <div
-          style={{
-            marginTop: 12,
-            padding: 12,
-            borderRadius: 12,
-            background: "rgba(255,0,0,0.10)",
-            border: "1px solid rgba(255,255,255,0.12)",
-          }}
-        >
-          {apiError}
-        </div>
-      )}
+      <AlertBox>{apiError}</AlertBox>
 
       <form onSubmit={onSubmit} style={{ marginTop: 16, display: "grid", gap: 12 }}>
-        <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontWeight: 650, fontSize: 13 }}>
-            Tipo de Cliente
-            {errors.tipoCliente && (
-              <span style={{ marginLeft: 8, color: "rgba(255,120,120,0.95)" }}>{errors.tipoCliente}</span>
-            )}
-          </div>
-          <select name="tipoCliente" value={form.tipoCliente} onChange={onChange} style={inputStyle}>
+        <FormField label="Tipo de Cliente" error={errors.tipoCliente}>
+          <SelectInput name="tipoCliente" value={form.tipoCliente} onChange={onChange}>
             <option value="E">E — Empresa</option>
             <option value="P">P — Particular</option>
-          </select>
-        </label>
+          </SelectInput>
+        </FormField>
 
-        <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontWeight: 650, fontSize: 13 }}>
-            País *
-            {errors.paisId && <span style={{ marginLeft: 8, color: "rgba(255,120,120,0.95)" }}>{errors.paisId}</span>}
-          </div>
-          <select
+        <FormField label="País *" error={errors.paisId}>
+          <SelectInput
             name="paisId"
             value={form.paisId}
             onChange={onChange}
             disabled={loadingPaises}
-            style={inputStyle}
           >
             {paises.length === 0 ? (
-              <option value={427}>Portugal</option>
+              <option value={DEFAULT_PORTUGAL_ID}>Portugal</option>
             ) : (
               paises.map((p) => (
                 <option key={p.PaisID} value={p.PaisID}>
@@ -174,22 +155,17 @@ export default function ClienteFormPage() {
                 </option>
               ))
             )}
-          </select>
-        </label>
+          </SelectInput>
+        </FormField>
 
-        <label style={{ display: "grid", gap: 6 }}>
-          <div style={{ fontWeight: 650, fontSize: 13 }}>
-            Nome *
-            {errors.nome && <span style={{ marginLeft: 8, color: "rgba(255,120,120,0.95)" }}>{errors.nome}</span>}
-          </div>
-          <input
+        <FormField label="Nome *" error={errors.nome}>
+          <TextInput
             name="nome"
             value={form.nome}
             onChange={onChange}
-            placeholder="Ex: Perfil Aluval, Lda"
-            style={inputStyle}
+            placeholder="Ex: Miguel Torres / Perfil Aluval, Lda"
           />
-        </label>
+        </FormField>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <button type="submit" disabled={saving}>
@@ -200,12 +176,3 @@ export default function ClienteFormPage() {
     </div>
   );
 }
-
-const inputStyle = {
-  padding: "10px 12px",
-  borderRadius: 12,
-  border: "1px solid rgba(255,255,255,0.12)",
-  background: "rgba(255,255,255,0.06)",
-  color: "rgba(255,255,255,0.92)",
-  outline: "none",
-};
