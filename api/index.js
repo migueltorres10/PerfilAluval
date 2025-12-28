@@ -30,6 +30,9 @@ app.use("/api/distritos", distritosRouter);
 const concelhosRouter = require("./routes/concelhos.routes");
 app.use("/api/concelhos", concelhosRouter);
 
+const codigosPostaisRouter = require("./routes/codigosPostais.routes");
+app.use("/api/codigos-postais", codigosPostaisRouter);
+
 const clientesRouter = require("./routes/clientes.routes");
 app.use("/api/clientes", clientesRouter);
 
