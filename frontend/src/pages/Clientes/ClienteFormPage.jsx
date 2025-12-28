@@ -42,8 +42,22 @@ function ClienteCreateView({ navigate }) {
   const [form, setForm] = useState({
     tipoCliente: "E",
     nome: "",
+    nomeComercial: "",
+    nif: "",
     paisId: DEFAULT_PORTUGAL_ID,
+    email: "",
+    telefone: "",
+    telemovel: "",
+    codDistrito: "",
+    codConcelho: "",
+    nomeLocalidade: "",
+    numCodPostal: "",
+    extCodPostal: "",
+    moradaLinha1: "",
+    moradaLinha2: "",
+    observacoes: "",
   });
+
 
   const [paises, setPaises] = useState([]);
   const [loadingPaises, setLoadingPaises] = useState(true);
@@ -103,8 +117,22 @@ function ClienteCreateView({ navigate }) {
       const payload = {
         tipoCliente: form.tipoCliente,
         nome: form.nome.trim(),
+        nomeComercial: form.nomeComercial.trim() || null,
+        nif: form.nif.trim() || null,
         paisId: Number(form.paisId),
+        email: form.email.trim() || null,
+        telefone: form.telefone.trim() || null,
+        telemovel: form.telemovel.trim() || null,
+        codDistrito: form.codDistrito || null,
+        codConcelho: form.codConcelho || null,
+        nomeLocalidade: form.nomeLocalidade.trim() || null,
+        numCodPostal: form.numCodPostal.trim() || null,
+        extCodPostal: form.extCodPostal.trim() || null,
+        moradaLinha1: form.moradaLinha1.trim() || null,
+        moradaLinha2: form.moradaLinha2.trim() || null,
+        observacoes: form.observacoes || null,
       };
+
 
       const r = await clientesApi.create(payload);
       navigate(`/clientes/${r.id}`, { replace: true });
