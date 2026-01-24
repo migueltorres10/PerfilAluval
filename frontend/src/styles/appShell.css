@@ -298,3 +298,25 @@ body{
     grid-column: span 2;
   }
 }
+/* Corrigir cores do dropdown nativo no tema escuro */
+select{
+  color-scheme: light;        /* força UI do dropdown a "light" */
+}
+
+/* garante lista de opções legível */
+select option{
+  color: #000 !important;
+  background: #fff !important;
+}
+
+/* selecionada (muito mais consistente que hover) */
+select option:checked{
+  color: #fff !important;
+  background: #1e293b !important;
+}
+
+/* hover (pode não funcionar em todos os browsers) */
+select option:hover{
+  color: #fff !important;
+  background: #1e293b !important;
+}
