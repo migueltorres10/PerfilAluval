@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { clientesApi } from "../../services/api";
 import { AlertBox } from "../../components/ui/AlertBox";
+import { useAutoClearMessage } from "../../utils/useAutoClearMessage";
 
 export default function ClientesListPage() {
   const navigate = useNavigate();
@@ -12,6 +13,11 @@ export default function ClientesListPage() {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState("");
+  const [apiSuccess, setApiSuccess] = useState("");
+
+  useAutoClearMessage(apiSuccess, setApiSuccess, 3000); 
+
+  useAutoClearMessage(apiError, setApiError, 5000);
 
   // debounce simples para não fazer request a cada tecla
   const qDebounced = useDebouncedValue(q, 250);
@@ -41,15 +47,42 @@ export default function ClientesListPage() {
     return "Todos";
   }, [status]);
 
-  async function onReativar(id) {
+  async function onToggleAtivo(cliente) {
+    const id = cliente.ClienteID;
+    const nome = cliente.Nome || `#${id}`;
+    const ativo = Number(cliente.Ativo) === 1;
+
+
+    const question = ativo
+    ? `Pretende desativar o cliente ${nome}?`
+    : `Pretende reativar o cliente ${nome}?`;
+
+
+    const confirmed = window.confirm(question);
+    if (!confirmed) return;
+
+
+    setApiError("");
+    setApiSuccess("");
+
+
     try {
-      setApiError("");
-      await clientesApi.reativar(id);
-      await load();
-    } catch (err) {
-      setApiError(err?.data?.error || "Erro ao reativar cliente.");
+    if (ativo) {
+    await clientesApi.remove(id); // desativar (soft delete)
+    setApiSuccess(`Cliente desativado com sucesso: ${nome}`);
+    } else {
+    await clientesApi.reativar(id); // reativar
+    setApiSuccess(`Cliente reativado com sucesso: ${nome}`);
     }
-  }
+
+
+await load(); // refrescar lista após ação
+window.scrollTo({ top: 0, behavior: "smooth" }); // garantir que vês o alerta no topo
+} catch (err) {
+setApiError(err?.data?.error || err?.message || "Ocorreu um erro ao executar a ação.");
+window.scrollTo({ top: 0, behavior: "smooth" });
+}
+}
 
   return (
     <div style={{ padding: 16 }}>
@@ -103,60 +136,54 @@ export default function ClientesListPage() {
         </button>
       </div>
 
+      {/* ✅ mensagens no topo */}
       {apiError ? <AlertBox>{apiError}</AlertBox> : null}
+      {apiSuccess ? <AlertBox variant="success">{apiSuccess}</AlertBox> : null}
 
       {loading ? (
         <div style={{ marginTop: 16, opacity: 0.8 }}>A carregar…</div>
       ) : (
         <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
-          {clientes.map((c) => (
-            <div
-              key={c.ClienteID}
-              style={{
-                padding: 12,
-                borderRadius: 14,
-                border: "1px solid rgba(255,255,255,0.10)",
-                background: "rgba(255,255,255,0.05)",
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                gap: 12,
-              }}
-            >
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontWeight: 750, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {c.Nome}
-                  {c.Ativo === 0 ? <span style={{ opacity: 0.7 }}> (Inativo)</span> : null}
+          {clientes.map((c) => {
+            const ativo = Number(c.Ativo) === 1;
+
+            return (
+              <div
+                key={c.ClienteID}
+                style={{
+                  padding: 12,
+                  borderRadius: 14,
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  background: "rgba(255,255,255,0.05)",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 12,
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 750, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {c.Nome}
+                    {!ativo ? <span style={{ opacity: 0.7 }}> (Inativo)</span> : null}
+                  </div>
+
+                  <div style={{ opacity: 0.75, fontSize: 13, marginTop: 2 }}>
+                    NIF: {c.NIF || "—"} • {c.NomeLocalidade || "—"}
+                  </div>
                 </div>
 
-                <div style={{ opacity: 0.75, fontSize: 13, marginTop: 2 }}>
-                  NIF: {c.NIF || "—"} • {c.NomeLocalidade || "—"}
+                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                  <button type="button" onClick={() => navigate(`/clientes/${c.ClienteID}`)}>
+                    Editar
+                  </button>
+
+                  <button type="button" onClick={() => onToggleAtivo(c)}>
+                    {ativo ? "Eliminar" : "Reativar"}
+                  </button>
                 </div>
               </div>
-
-              <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                {c.Ativo === 1 ? (
-                  <>
-                    <button type="button" onClick={() => navigate(`/clientes/${c.ClienteID}`)}>
-                      Editar
-                    </button>
-                    <button type="button" onClick={() => navigate(`/clientes/${c.ClienteID}/eliminar`)}>
-                      Eliminar
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button type="button" onClick={() => onReativar(c.ClienteID)}>
-                      Reativar
-                    </button>
-                    <button type="button" onClick={() => navigate(`/clientes/${c.ClienteID}`)}>
-                      Editar
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {!clientes.length && (
             <div style={{ opacity: 0.8, padding: 12 }}>Não existem clientes para mostrar.</div>
@@ -165,8 +192,9 @@ export default function ClientesListPage() {
       )}
     </div>
   );
-}
+} // ✅ fecha o componente aqui
 
+// ✅ hook fora do componente
 function useDebouncedValue(value, delayMs) {
   const [v, setV] = useState(value);
 
