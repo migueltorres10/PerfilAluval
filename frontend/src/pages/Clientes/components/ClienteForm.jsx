@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { FormField } from "../../../components/ui/FormField";
 import { TextInput, SelectInput } from "../../../components/ui/Input";
 import { AlertBox } from "../../../components/ui/AlertBox";
@@ -7,6 +8,7 @@ export default function ClienteForm({
   form,
   errors,
   apiError,
+  apiSuccess,
   saving,
   onChange,
   onSubmit,
@@ -21,8 +23,29 @@ export default function ClienteForm({
   subtitle = "Criar ficha de cliente",
   submitLabel = "Criar Cliente",
 }) {
+  const topRef = useRef(null);
+
+  const scrollToTop = () => {
+    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.scrollTo({ top: 0, behavior: "smooth" }); // fallback
+  };
+
+  // sempre que houver erro/sucesso, sobe
+  useEffect(() => {
+    if (apiError || apiSuccess) scrollToTop();
+  }, [apiError, apiSuccess]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    scrollToTop();      // sobe logo ao clicar em "Criar Cliente"
+    onSubmit?.(e);      // chama o submit real (parent)
+  };
+
   return (
     <div className="clienteFormPage">
+      {/* anchor no topo */}
+      <div ref={topRef} />
+
       <header style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div>
           <h1 style={{ margin: 0 }}>{title}</h1>
@@ -31,16 +54,18 @@ export default function ClienteForm({
         <button type="button" onClick={onBack}>Voltar</button>
       </header>
 
-      <AlertBox>{apiError}</AlertBox>
+      {/* mensagens no topo */}
+      {apiError && <AlertBox>{apiError}</AlertBox>}
+      {apiSuccess && <AlertBox variant="success">{apiSuccess}</AlertBox>}
 
-      <form onSubmit={onSubmit} className="clienteFormGrid">
+      <form onSubmit={handleSubmit} className="clienteFormGrid">
         <div className="col">
-            <FormField label="Tipo de Cliente" error={errors.tipoCliente}>
+          <FormField label="Tipo de Cliente" error={errors.tipoCliente}>
             <SelectInput name="tipoCliente" value={form.tipoCliente} onChange={onChange}>
-                <option value="E">E — Empresa</option>
-                <option value="P">P — Particular</option>
+              <option value="E">E — Empresa</option>
+              <option value="P">P — Particular</option>
             </SelectInput>
-            </FormField>
+          </FormField>
         </div>
 
         <FormField label="País *" error={errors.paisId}>
@@ -54,10 +79,10 @@ export default function ClienteForm({
         </FormField>
 
         <div className="col span2">
-            <FormField label="Nome *" error={errors.nome}>
+          <FormField label="Nome *" error={errors.nome}>
             <TextInput name="nome" value={form.nome} onChange={onChange} placeholder="Ex: Miguel Torres / Empresa" />
-            </FormField>
-        </div>    
+          </FormField>
+        </div>
 
         <FormField label="Nome Comercial" error={errors.nomeComercial}>
           <TextInput name="nomeComercial" value={form.nomeComercial} onChange={onChange} placeholder="Ex: Aluval" />

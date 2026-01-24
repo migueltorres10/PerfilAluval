@@ -13,5 +13,12 @@ export function validateClienteForm(form) {
   if (num && !/^\d{4}$/.test(num)) errors.numCodPostal = "CP deve ter 4 dígitos.";
   if (ext && !/^\d{3}$/.test(ext)) errors.extCodPostal = "Extensão CP deve ter 3 dígitos.";
 
+  const nif = String(form.nif || "").trim();
+  if (!nif) {
+  errors.nif = "NIF é obrigatório.";
+  } else if (nif.length > 20) {
+  errors.nif = "NIF não pode ter mais de 20 caracteres.";
+  }
+
   return errors;
 }

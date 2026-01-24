@@ -4,7 +4,7 @@ import { validateClienteForm } from "../cliente.validation";
 
 const DEFAULT_PORTUGAL_ID = 427;
 
-export function useClienteCreate({ onCreated } = {}) {
+export function useClienteEdit(id, { onUpdated } = {}) {
   const [form, setForm] = useState({
     tipoCliente: "E",
     nome: "",
@@ -28,8 +28,11 @@ export function useClienteCreate({ onCreated } = {}) {
 
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+
   const [apiError, setApiError] = useState("");
   const [apiSuccess, setApiSuccess] = useState("");
+
+  const [loadingCliente, setLoadingCliente] = useState(true);
 
   const [paises, setPaises] = useState([]);
   const [loadingPaises, setLoadingPaises] = useState(true);
@@ -40,6 +43,48 @@ export function useClienteCreate({ onCreated } = {}) {
   const [concelhos, setConcelhos] = useState([]);
   const [loadingConcelhos, setLoadingConcelhos] = useState(false);
 
+  // Carregar cliente por ID
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      setLoadingCliente(true);
+      setApiError("");
+      try {
+        const c = await clientesApi.getById(id);
+        if (!alive) return;
+
+        setForm((f) => ({
+          ...f,
+          tipoCliente: c?.TipoCliente ?? "E",
+          nome: c?.Nome ?? "",
+          nomeComercial: c?.NomeComercial ?? "",
+          nif: c?.NIF ?? "",
+          paisId: Number(c?.PaisID ?? DEFAULT_PORTUGAL_ID),
+          email: c?.Email ?? "",
+          telefone: c?.Telefone ?? "",
+          telemovel: c?.Telemovel ?? "",
+
+          codDistrito: c?.CodDistrito ?? "",
+          codConcelho: c?.CodConcelho ?? "",
+          nomeLocalidade: c?.NomeLocalidade ?? "",
+          numCodPostal: c?.NumCodPostal ?? "",
+          extCodPostal: c?.ExtCodPostal ?? "",
+          moradaLinha1: c?.MoradaLinha1 ?? "",
+          moradaLinha2: c?.MoradaLinha2 ?? "",
+
+          observacoes: c?.Observacoes ?? "",
+        }));
+      } catch (err) {
+        if (alive) setApiError(err?.data?.error || "Erro ao carregar cliente.");
+      } finally {
+        if (alive) setLoadingCliente(false);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+
   // Países
   useEffect(() => {
     let alive = true;
@@ -48,13 +93,7 @@ export function useClienteCreate({ onCreated } = {}) {
       try {
         const list = await paisesApi.list();
         if (!alive) return;
-        const safe = Array.isArray(list) ? list : [];
-        setPaises(safe);
-
-        const hasPortugal = safe.some((p) => Number(p.PaisID) === DEFAULT_PORTUGAL_ID);
-        if (!hasPortugal && safe.length) {
-          setForm((f) => ({ ...f, paisId: Number(safe[0].PaisID) }));
-        }
+        setPaises(Array.isArray(list) ? list : []);
       } catch {
         if (alive) setPaises([]);
       } finally {
@@ -119,10 +158,8 @@ export function useClienteCreate({ onCreated } = {}) {
     if (apiSuccess) setApiSuccess("");
 
     setForm((f) => {
-      // normalizações
       if (name === "paisId") return { ...f, paisId: Number(value) };
 
-      // dependências morada
       if (name === "codDistrito") {
         return {
           ...f,
@@ -182,16 +219,13 @@ export function useClienteCreate({ onCreated } = {}) {
         observacoes: form.observacoes || null,
       };
 
-      const r = await clientesApi.create(payload);
-
-      setApiSuccess("Cliente criado com sucesso!");
-      setErrors({});      
-
-      onCreated?.(r?.id);
+      await clientesApi.update(id, payload);
+      setApiSuccess("Cliente atualizado com sucesso!");
+      onUpdated?.();
     } catch (err) {
       const apiErrors = err?.data?.errors;
       if (apiErrors && typeof apiErrors === "object") setErrors(apiErrors);
-      setApiError(err?.data?.error || "Erro ao criar cliente.");
+      setApiError(err?.data?.error || "Erro ao atualizar cliente.");
     } finally {
       setSaving(false);
     }
@@ -204,6 +238,7 @@ export function useClienteCreate({ onCreated } = {}) {
     apiError,
     apiSuccess,
     saving,
+    loadingCliente,
 
     paises,
     loadingPaises,
@@ -216,5 +251,6 @@ export function useClienteCreate({ onCreated } = {}) {
     onSubmit,
     setErrors,
     setApiError,
+    setApiSuccess,
   };
 }

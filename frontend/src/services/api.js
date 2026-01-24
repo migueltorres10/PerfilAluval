@@ -43,10 +43,24 @@ export const codigosPostaisApi = {
 };
 
 export const clientesApi = {
+  list: () => request("/api/clientes"),
+
   create: (payload) =>
     request("/api/clientes", {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+
   getById: (id) => request(`/api/clientes/${id}`),
+
+  update: (id, payload) =>
+    request(`/api/clientes/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+
+  remove: (id) =>
+    request(`/api/clientes/${id}`, {
+      method: "DELETE",
+    }),
 };
