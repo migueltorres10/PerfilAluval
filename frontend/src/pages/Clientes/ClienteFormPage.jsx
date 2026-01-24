@@ -14,7 +14,12 @@ export default function ClienteFormPage() {
     return "edit";
   }, [id, location.pathname]);
 
-  // por agora: só create (mantém rotas edit/delete vivas sem partir)
+  // ✅ hook SEMPRE chamado (ordem estável)
+  const vm = useClienteCreate({
+    onCreated: (newId) => navigate(`/clientes/${newId}`, { replace: true }),
+  });
+
+  // por agora: só create
   if (mode !== "create") {
     return (
       <div style={{ padding: 16 }}>
@@ -22,14 +27,12 @@ export default function ClienteFormPage() {
         <p style={{ opacity: 0.8 }}>
           Modo <b>{mode}</b> (ID {id}) — a seguir ligamos editar/eliminar.
         </p>
-        <button type="button" onClick={() => navigate("/clientes")}>Voltar</button>
+        <button type="button" onClick={() => navigate("/clientes")}>
+          Voltar
+        </button>
       </div>
     );
   }
-
-  const vm = useClienteCreate({
-    onCreated: (newId) => navigate(`/clientes/${newId}`, { replace: true }),
-  });
 
   return (
     <ClienteForm

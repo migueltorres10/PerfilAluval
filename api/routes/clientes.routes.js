@@ -20,9 +20,13 @@ function validateCliente(payload) {
   if (!tipo || !["E", "P"].includes(tipo)) errors.tipoCliente = "TipoCliente deve ser 'E' ou 'P'.";
   if (!Number.isFinite(paisId) || paisId <= 0) errors.paisId = "PaisID inválido.";
 
-  const nif = s(payload.nif);
-  if (nif && !/^\d{9}$/.test(nif)) errors.nif = "NIF deve ter 9 dígitos.";
+const nif = s(payload.nif);
 
+if (!nif) {
+  errors.nif = "NIF é obrigatório.";
+} else if (nif.length > 20) {
+  errors.nif = "NIF não pode ter mais de 20 caracteres.";
+}
   const email = s(payload.email);
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Email inválido.";
 
