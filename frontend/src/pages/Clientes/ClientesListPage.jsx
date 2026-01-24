@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { clientesApi } from "../../services/api";
 import { AlertBox } from "../../components/ui/AlertBox";
 import { useAutoClearMessage } from "../../utils/useAutoClearMessage";
+import { ConfirmModal } from "../../components/ui/ConfirmModal";
 
 export default function ClientesListPage() {
   const navigate = useNavigate();
@@ -14,6 +15,15 @@ export default function ClientesListPage() {
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState("");
   const [apiSuccess, setApiSuccess] = useState("");
+
+  const [stats, setStats] = useState({
+    Ativos: 0,
+    Inativos: 0,
+    Total: 0,
+  });
+
+  const [confirm, setConfirm] = useState(null);
+  // confirm = { cliente, action: "deactivate" | "reactivate" }
 
   useAutoClearMessage(apiSuccess, setApiSuccess, 3000);
   useAutoClearMessage(apiError, setApiError, 5000);
@@ -27,6 +37,7 @@ export default function ClientesListPage() {
     return "Todos";
   }, [status]);
 
+  // ---------- LOAD LIST ----------
   const load = useCallback(async () => {
     setLoading(true);
     setApiError("");
@@ -42,11 +53,20 @@ export default function ClientesListPage() {
     }
   }, [status, qDebounced]);
 
-  const [stats, setStats] = useState({
-    Ativos: 0,
-    Inativos: 0,
-    Total: 0,
-  });
+  // ---------- LOAD STATS ----------
+  async function loadStats() {
+    try {
+      const data = await clientesApi.stats({ q: qDebounced });
+
+      setStats({
+        Ativos: Number(data?.Ativos ?? 0),
+        Inativos: Number(data?.Inativos ?? 0),
+        Total: Number(data?.Total ?? 0),
+      });
+    } catch (err) {
+      console.error("Erro a carregar stats:", err);
+    }
+  }
 
   useEffect(() => {
     load();
@@ -54,53 +74,50 @@ export default function ClientesListPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qDebounced, status]);
 
-  async function loadStats() {
-    try {
-      const data = await clientesApi.stats({ q: qDebounced });
-
-      // normalização defensiva
-      setStats({
-        Ativos: Number(data?.Ativos ?? data?.ativos ?? 0),
-        Inativos: Number(data?.Inativos ?? data?.inativos ?? 0),
-        Total: Number(data?.Total ?? data?.total ?? 0),
-      });
-    } catch (err) {
-      console.error("Erro a carregar stats:", err);
-    }
-  }
-
-  async function onToggleAtivo(cliente) {
-    const id = cliente.ClienteID;
-    const nome = cliente.Nome || `#${id}`;
+  // ---------- OPEN MODAL ----------
+  function onToggleAtivo(cliente) {
     const ativo = Number(cliente.Ativo) === 1;
 
-    const question = ativo
-      ? `Pretende desativar o cliente ${nome}?`
-      : `Pretende reativar o cliente ${nome}?`;
+    setConfirm({
+      cliente,
+      action: ativo ? "deactivate" : "reactivate",
+    });
+  }
 
-    const confirmed = window.confirm(question);
-    if (!confirmed) return;
+  // ---------- CONFIRM ACTION ----------
+  async function confirmToggle() {
+    if (!confirm) return;
 
+    const { cliente, action } = confirm;
+    const id = cliente.ClienteID;
+    const nome = cliente.Nome || `#${id}`;
+
+    setConfirm(null);
     setApiError("");
     setApiSuccess("");
 
     try {
-      if (ativo) {
-        await clientesApi.remove(id); // desativar (soft delete)
+      if (action === "deactivate") {
+        await clientesApi.remove(id);
         setApiSuccess(`Cliente desativado com sucesso: ${nome}`);
       } else {
-        await clientesApi.reativar(id); // reativar
+        await clientesApi.reativar(id);
         setApiSuccess(`Cliente reativado com sucesso: ${nome}`);
       }
 
       await load();
+      await loadStats();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setApiError(err?.data?.error || err?.message || "Ocorreu um erro ao executar a ação.");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setApiError(
+        err?.data?.error ||
+          err?.message ||
+          "Ocorreu um erro ao executar a ação."
+      );
     }
   }
 
+  // ---------- RENDER ----------
   return (
     <div>
       <div className="pageHeader">
@@ -114,7 +131,7 @@ export default function ClientesListPage() {
         </button>
       </div>
 
-      {/* Barra de pesquisa + filtro */}
+      {/* Barra de pesquisa + filtros */}
       <div className="toolbar">
         <input
           className="searchInput"
@@ -123,34 +140,34 @@ export default function ClientesListPage() {
           placeholder="Pesquisar por nome, NIF ou localidade…"
         />
 
-      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
-        <button
-          type="button"
-          onClick={() => setStatus("active")}
-          style={{ fontWeight: status === "active" ? 700 : 400 }}
-        >
-          Ativos ({stats.Ativos})
-        </button>
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button
+            type="button"
+            onClick={() => setStatus("active")}
+            style={{ fontWeight: status === "active" ? 700 : 400 }}
+          >
+            Ativos ({stats.Ativos})
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setStatus("inactive")}
-          style={{ fontWeight: status === "inactive" ? 700 : 400 }}
-        >
-          Inativos ({stats.Inativos})
-        </button>
+          <button
+            type="button"
+            onClick={() => setStatus("inactive")}
+            style={{ fontWeight: status === "inactive" ? 700 : 400 }}
+          >
+            Inativos ({stats.Inativos})
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setStatus("all")}
-          style={{ fontWeight: status === "all" ? 700 : 400 }}
-        >
-          Todos ({stats.Total})
-        </button>
+          <button
+            type="button"
+            onClick={() => setStatus("all")}
+            style={{ fontWeight: status === "all" ? 700 : 400 }}
+          >
+            Todos ({stats.Total})
+          </button>
+        </div>
       </div>
-      </div>
 
-      {/* mensagens no topo */}
+      {/* mensagens */}
       {apiError ? <AlertBox>{apiError}</AlertBox> : null}
       {apiSuccess ? <AlertBox variant="success">{apiSuccess}</AlertBox> : null}
 
@@ -166,7 +183,9 @@ export default function ClientesListPage() {
                 <div className="rowMain">
                   <div className="rowTitle">
                     {c.Nome}
-                    {!ativo ? <span className="listRowTag"> (Inativo)</span> : null}
+                    {!ativo ? (
+                      <span className="listRowTag"> (Inativo)</span>
+                    ) : null}
                   </div>
 
                   <div className="rowSub">
@@ -175,7 +194,10 @@ export default function ClientesListPage() {
                 </div>
 
                 <div className="listRowActions">
-                  <button type="button" onClick={() => navigate(`/clientes/${c.ClienteID}`)}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/clientes/${c.ClienteID}`)}
+                  >
                     Editar
                   </button>
 
@@ -198,11 +220,38 @@ export default function ClientesListPage() {
           )}
         </div>
       )}
+
+      {/* MODAL CONFIRMAÇÃO */}
+      <ConfirmModal
+        open={!!confirm}
+        title={
+          confirm?.action === "deactivate"
+            ? "Desativar cliente"
+            : "Reativar cliente"
+        }
+        message={
+          confirm
+            ? `Pretende ${
+                confirm.action === "deactivate"
+                  ? "desativar"
+                  : "reativar"
+              } o cliente ${confirm.cliente.Nome}?`
+            : ""
+        }
+        confirmText={
+          confirm?.action === "deactivate" ? "Desativar" : "Reativar"
+        }
+        confirmVariant={
+          confirm?.action === "deactivate" ? "danger" : "success"
+        }
+        onCancel={() => setConfirm(null)}
+        onConfirm={confirmToggle}
+      />
     </div>
   );
 }
 
-// hook fora do componente
+// ---------- debounce helper ----------
 function useDebouncedValue(value, delayMs) {
   const [v, setV] = useState(value);
 
