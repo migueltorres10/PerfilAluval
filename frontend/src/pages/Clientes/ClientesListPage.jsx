@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { clientesApi } from "../../services/api";
 import { AlertBox } from "../../components/ui/AlertBox";
@@ -15,31 +15,11 @@ export default function ClientesListPage() {
   const [apiError, setApiError] = useState("");
   const [apiSuccess, setApiSuccess] = useState("");
 
-  useAutoClearMessage(apiSuccess, setApiSuccess, 3000); 
-
+  useAutoClearMessage(apiSuccess, setApiSuccess, 3000);
   useAutoClearMessage(apiError, setApiError, 5000);
 
   // debounce simples para não fazer request a cada tecla
   const qDebounced = useDebouncedValue(q, 250);
-
-  async function load() {
-    setLoading(true);
-    setApiError("");
-    try {
-      const list = await clientesApi.list({ status, q: qDebounced });
-      setClientes(Array.isArray(list) ? list : []);
-    } catch (err) {
-      setApiError(err?.data?.error || "Erro ao carregar lista de clientes.");
-      setClientes([]);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, qDebounced]);
 
   const titleLine = useMemo(() => {
     if (status === "active") return "Ativos";
@@ -47,49 +27,63 @@ export default function ClientesListPage() {
     return "Todos";
   }, [status]);
 
+  const load = useCallback(async () => {
+    setLoading(true);
+    setApiError("");
+
+    try {
+      const list = await clientesApi.list({ status, q: qDebounced });
+      setClientes(Array.isArray(list) ? list : []);
+    } catch (err) {
+      setClientes([]);
+      setApiError(err?.data?.error || "Erro ao carregar lista de clientes.");
+    } finally {
+      setLoading(false);
+    }
+  }, [status, qDebounced]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
   async function onToggleAtivo(cliente) {
     const id = cliente.ClienteID;
     const nome = cliente.Nome || `#${id}`;
     const ativo = Number(cliente.Ativo) === 1;
 
-
     const question = ativo
-    ? `Pretende desativar o cliente ${nome}?`
-    : `Pretende reativar o cliente ${nome}?`;
-
+      ? `Pretende desativar o cliente ${nome}?`
+      : `Pretende reativar o cliente ${nome}?`;
 
     const confirmed = window.confirm(question);
     if (!confirmed) return;
 
-
     setApiError("");
     setApiSuccess("");
 
-
     try {
-    if (ativo) {
-    await clientesApi.remove(id); // desativar (soft delete)
-    setApiSuccess(`Cliente desativado com sucesso: ${nome}`);
-    } else {
-    await clientesApi.reativar(id); // reativar
-    setApiSuccess(`Cliente reativado com sucesso: ${nome}`);
+      if (ativo) {
+        await clientesApi.remove(id); // desativar (soft delete)
+        setApiSuccess(`Cliente desativado com sucesso: ${nome}`);
+      } else {
+        await clientesApi.reativar(id); // reativar
+        setApiSuccess(`Cliente reativado com sucesso: ${nome}`);
+      }
+
+      await load();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setApiError(err?.data?.error || err?.message || "Ocorreu um erro ao executar a ação.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
-
-await load(); // refrescar lista após ação
-window.scrollTo({ top: 0, behavior: "smooth" }); // garantir que vês o alerta no topo
-} catch (err) {
-setApiError(err?.data?.error || err?.message || "Ocorreu um erro ao executar a ação.");
-window.scrollTo({ top: 0, behavior: "smooth" });
-}
-}
+  }
 
   return (
-    <div style={{ padding: 16 }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+    <div>
+      <div className="pageHeader">
         <div>
-          <h1 style={{ margin: 0 }}>Clientes</h1>
-          <p style={{ margin: "6px 0 0 0", opacity: 0.75 }}>A mostrar: {titleLine}</p>
+          <h1>Clientes</h1>
+          <p className="pageHeaderSub">A mostrar: {titleLine}</p>
         </div>
 
         <button type="button" onClick={() => navigate("/clientes/novo")}>
@@ -98,27 +92,15 @@ window.scrollTo({ top: 0, behavior: "smooth" });
       </div>
 
       {/* Barra de pesquisa + filtro */}
-      <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
+      <div className="toolbar">
         <input
+          className="searchInput"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Pesquisar por nome, NIF ou localidade…"
-          style={{
-            flex: "1 1 320px",
-            padding: "10px 12px",
-            borderRadius: 12,
-            border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(255,255,255,0.06)",
-            color: "rgba(255,255,255,0.92)",
-            outline: "none",
-          }}
         />
 
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="contentInput"
-        >
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="active">Ativos</option>
           <option value="inactive">Inativos</option>
           <option value="all">Todos</option>
@@ -129,48 +111,40 @@ window.scrollTo({ top: 0, behavior: "smooth" });
         </button>
       </div>
 
-      {/* ✅ mensagens no topo */}
+      {/* mensagens no topo */}
       {apiError ? <AlertBox>{apiError}</AlertBox> : null}
       {apiSuccess ? <AlertBox variant="success">{apiSuccess}</AlertBox> : null}
 
       {loading ? (
         <div style={{ marginTop: 16, opacity: 0.8 }}>A carregar…</div>
       ) : (
-        <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
+        <div className="listStack">
           {clientes.map((c) => {
             const ativo = Number(c.Ativo) === 1;
 
             return (
-              <div
-                key={c.ClienteID}
-                style={{
-                  padding: 12,
-                  borderRadius: 14,
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  background: "rgba(255,255,255,0.05)",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  gap: 12,
-                }}
-              >
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 750, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <div key={c.ClienteID} className="listRow">
+                <div className="rowMain">
+                  <div className="rowTitle">
                     {c.Nome}
-                    {!ativo ? <span style={{ opacity: 0.7 }}> (Inativo)</span> : null}
+                    {!ativo ? <span className="listRowTag"> (Inativo)</span> : null}
                   </div>
 
-                  <div style={{ opacity: 0.75, fontSize: 13, marginTop: 2 }}>
+                  <div className="rowSub">
                     NIF: {c.NIF || "—"} • {c.NomeLocalidade || "—"}
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                <div className="listRowActions">
                   <button type="button" onClick={() => navigate(`/clientes/${c.ClienteID}`)}>
                     Editar
                   </button>
 
-                  <button type="button" onClick={() => onToggleAtivo(c)}>
+                  <button
+                    type="button"
+                    className={ativo ? "btnDanger" : "btnSuccess"}
+                    onClick={() => onToggleAtivo(c)}
+                  >
                     {ativo ? "Eliminar" : "Reativar"}
                   </button>
                 </div>
@@ -179,15 +153,17 @@ window.scrollTo({ top: 0, behavior: "smooth" });
           })}
 
           {!clientes.length && (
-            <div style={{ opacity: 0.8, padding: 12 }}>Não existem clientes para mostrar.</div>
+            <div style={{ opacity: 0.8, padding: 12 }}>
+              Não existem clientes para mostrar.
+            </div>
           )}
         </div>
       )}
     </div>
   );
-} // ✅ fecha o componente aqui
+}
 
-// ✅ hook fora do componente
+// hook fora do componente
 function useDebouncedValue(value, delayMs) {
   const [v, setV] = useState(value);
 
