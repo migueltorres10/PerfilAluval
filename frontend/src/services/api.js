@@ -43,7 +43,8 @@ export const codigosPostaisApi = {
 };
 
 export const clientesApi = {
-  list: () => request("/api/clientes"),
+  list: ({ status = "active", q = "" } = {}) =>
+    request(`/api/clientes?status=${encodeURIComponent(status)}&q=${encodeURIComponent(q)}`),
 
   create: (payload) =>
     request("/api/clientes", {
@@ -62,5 +63,10 @@ export const clientesApi = {
   remove: (id) =>
     request(`/api/clientes/${id}`, {
       method: "DELETE",
+    }),
+
+  reativar: (id) =>
+    request(`/api/clientes/${id}/reativar`, {
+      method: "PATCH",
     }),
 };

@@ -198,34 +198,52 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// GET lista de clientes (ativos)
+// GET lista de clientes (status=active|inactive|all, q=pesquisa)
 router.get("/", async (req, res) => {
-try {
-const pool = await getPool();
+  try {
+    const pool = await getPool();
 
+    const status = String(req.query.status || "active").toLowerCase(); // default: active
+    const q = String(req.query.q || "").trim();
 
-const r = await pool.request().query(`
-SELECT
-ClienteID,
-Nome,
-NIF,
-NomeLocalidade,
-Email,
-Telefone,
-Telemovel,
-Ativo,
-DataCriacao,
-DataAtualizacao
-FROM rg.Clientes
-WHERE Ativo = 1
-ORDER BY ClienteID DESC
-`);
+    let where = "1=1";
+    if (status === "active") where += " AND Ativo = 1";
+    else if (status === "inactive") where += " AND Ativo = 0";
+    // status === "all" -> sem filtro
 
+    const hasQ = q.length > 0;
+    if (hasQ) {
+      where += ` AND (
+        Nome LIKE @q OR
+        NIF LIKE @q OR
+        NomeLocalidade LIKE @q
+      )`;
+    }
 
-res.json(r.recordset);
-} catch (e) {
-res.status(500).json({ error: "Erro ao listar clientes", detail: e.message });
-}
+    const r = await pool
+      .request()
+      .input("q", sql.NVarChar(200), hasQ ? `%${q}%` : null)
+      .query(`
+        SELECT
+          ClienteID,
+          Nome,
+          NIF,
+          NomeLocalidade,
+          Email,
+          Telefone,
+          Telemovel,
+          Ativo,
+          DataCriacao,
+          DataAtualizacao
+        FROM rg.Clientes
+        WHERE ${where}
+        ORDER BY ClienteID DESC
+      `);
+
+    res.json(r.recordset);
+  } catch (e) {
+    res.status(500).json({ error: "Erro ao listar clientes", detail: e.message });
+  }
 });
 
 
@@ -276,6 +294,30 @@ router.get("/:id", async (req, res) => {
       error: "Erro ao obter cliente",
       detail: e.message,
     });
+  }
+});
+
+// PATCH reativar cliente
+router.patch("/:id/reativar", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Id inválido" });
+
+  try {
+    const pool = await getPool();
+    const r = await pool.request()
+      .input("id", sql.Int, id)
+      .query(`
+        UPDATE rg.Clientes
+        SET Ativo = 1, DataAtualizacao = GETDATE()
+        WHERE ClienteID = @id;
+
+        SELECT @@ROWCOUNT AS affected;
+      `);
+
+    if (!r.recordset?.[0]?.affected) return res.status(404).json({ error: "Cliente não encontrado" });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: "Erro ao reativar cliente", detail: e.message });
   }
 });
 
