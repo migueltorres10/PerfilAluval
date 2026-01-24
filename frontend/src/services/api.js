@@ -78,3 +78,40 @@ export const clientesApi = {
     const qs = params.toString();
     return request(`/api/clientes/stats${qs ? `?${qs}` : ""}`);
 },};
+
+export const fornecedoresApi = {
+  list: ({ status = "active", q = "" } = {}) =>
+    request(`/api/fornecedores?status=${encodeURIComponent(status)}&q=${encodeURIComponent(q)}`),
+
+  
+
+  create: (payload) =>
+    request("/api/fornecedores", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  getById: (id) => request(`/api/fornecedores/${id}`),
+
+  update: (id, payload) =>
+    request(`/api/fornecedores/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+
+  remove: (id) =>
+    request(`/api/fornecedores/${id}`, {
+      method: "DELETE",
+    }),
+
+  reativar: (id) =>
+    request(`/api/fornecedores/${id}/reativar`, {
+      method: "PATCH",
+    }),
+  
+  stats: ({ q } = {}) => {
+    const params = new URLSearchParams();
+    if (q && String(q).trim()) params.set("q", String(q).trim());
+    const qs = params.toString();
+    return request(`/api/fornecedores/stats${qs ? `?${qs}` : ""}`);
+},};
