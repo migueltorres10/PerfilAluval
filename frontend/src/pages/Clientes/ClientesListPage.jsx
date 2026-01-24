@@ -86,13 +86,6 @@ export default function ClientesListPage() {
                   NIF: {c.NIF || "—"} • {c.NomeLocalidade || "—"}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => navigate(`/clientes/${c.ClienteID}`)}
-                  style={{ marginTop: 10 }}
-                >
-                  Editar
-                </button>
               </div>
 
               <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
