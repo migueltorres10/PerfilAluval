@@ -67,7 +67,7 @@
   line-height: 1.1;
 }
 .actionTitle{ font-size: 13px; font-weight: 650; }
-.actionHint{ font-size: 11px; color: rgba(255,255,255,0.65); }
+.actionHint{ font-size: 11px;  }
 
 /* Grid principal */
 .homeGrid{

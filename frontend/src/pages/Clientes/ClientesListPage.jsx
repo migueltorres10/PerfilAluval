@@ -117,14 +117,7 @@ window.scrollTo({ top: 0, behavior: "smooth" });
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          style={{
-            padding: "10px 12px",
-            borderRadius: 12,
-            border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(255,255,255,0.06)",
-            color: "rgba(255,255,255,0.92)",
-            outline: "none",
-          }}
+          className="contentInput"
         >
           <option value="active">Ativos</option>
           <option value="inactive">Inativos</option>

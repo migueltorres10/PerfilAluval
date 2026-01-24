@@ -1,83 +1,266 @@
+/* =========================================================
+   APP SHELL (GLOBAL THEME + LAYOUT)
+   - Desktop: sidebarDesktop visível, drawer escondido
+   - Mobile : drawer visível (quando .open), sidebarDesktop escondido
+   - Conteúdo: botões brancos e neutros
+   - Navegação: hover/ativo amarelo (accent) apenas nas barras
+========================================================= */
+
+/* =========================
+   1) DESIGN TOKENS
+========================= */
 :root{
-  --bg: #0b0f17;
-  --panel: #0f1626;
-  --panel2: #111a2e;
+  /* Fundo geral (ligeiramente translúcido) */
+  --bg: hwb(224 13% 65% / 0.664);
+
+  /* Painéis (sidebar/topbar) */
+  --panel: #1e315a;
+  --panel2: #162747;
+
+  /* Texto geral */
   --text: rgba(255,255,255,0.92);
-  --muted: rgba(255,255,255,0.65);
+  --muted: rgba(255,255,255,0.68);
+
+  /* Texto navegação (mais “nítido”) */
+  --nav-text: rgba(255,255,255,0.98);
+  --nav-muted: rgba(255,255,255,0.75);
+
+  /* Linhas / sombras */
   --line: rgba(255,255,255,0.10);
-  --shadow: 0 10px 30px rgba(0,0,0,0.30);
+  --shadow: 0 10px 30px rgba(0,0,0,0.28);
   --radius: 16px;
 
+  /* Acento (apenas navegação) */
+  --accent: #facc15;                 /* amarelo */
+  --accent-soft: rgba(250,204,21,0.18);
+  --accent-border: rgba(250,204,21,0.45);
+
+  /* Botões do conteúdo (“área de trabalho”) */
+  --btn-bg: rgba(255,255,255,0.92);
+  --btn-border: rgba(255,255,255,0.35);
+  --btn-text: #0b1222;
+  --btn-hover-bg: #ffffff;
+  --btn-hover-border: rgba(255,255,255,0.55);
+
+  /* Medidas */
   --sidebar-w: 280px;
   --sidebar-w-collapsed: 78px;
   --topbar-h: 64px;
+
+  /* Breakpoint central do shell */
+  --bp: 900px;
 }
 
-html, body, #root{
-  background: var(--bg);
-}
-
+/* =========================
+   2) BASE / RESET
+========================= */
 *{ box-sizing: border-box; }
-html, body{ height: 100%; }
+
+html, body{ height:100%; }
+html, body{
+background: var(--bg);
+min-height: 100%;
+}
+
+
+#root{
+min-height: 100%;
+}
+
 body{
   margin:0;
-  background: var(--bg);
+  min-width: 320px;
+  min-height: 100vh;
+
+  /* fundo “leve” */
+  background:
+    radial-gradient(1200px 700px at 50% -100px,
+      rgba(255,255,255,0.06),
+      transparent 60%);
+
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
-.appShell{
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
+/* Links do conteúdo: não usar accent por defeito */
+.pageContent a,
+.pageContent a:hover{
+  color: var(--text);
 }
 
-/* Sidebar desktop */
+/* =========================
+   3) LAYOUT ESTRUTURAL
+========================= */
+.appShell{
+  display:flex;
+  min-height:100vh;
+  width:100%;
+}
+
+/* A zona central (topbar + content) */
+.mainArea{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  width:100%;
+}
+
+/* Conteúdo/páginas */
+.pageContent{
+  padding:16px;
+  min-width:0;
+  background:transparent;
+  color: var(--text);
+}
+
+/* Botões do conteúdo: brancos */
+.pageContent button{
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border:1px solid var(--btn-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pageContent button:hover{
+  background: var(--btn-hover-bg);
+  border-color: var(--btn-hover-border);
+}
+.pageContent button:disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* =========================
+   4) SIDEBAR (DESKTOP)
+========================= */
 .sidebarDesktop{
   width: var(--sidebar-w);
   background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
   border-right: 1px solid var(--line);
   position: sticky;
   top: 0;
-  height: 100vh;
+
+  position: sticky;
+  top: 0;
+
+  height: auto;        /* ✅ */
+  min-height: 100vh;   /* ✅ */
+  align-self: stretch; /* ✅ */
+
+  position: relative;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+
+  position: relative; /* ✅ ADICIONAR */
+  box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+
+  /* separação do fundo */
+  box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+}
+.sidebarDesktop::after{
+  content:"";
+  position:absolute;
+  top:0; right:0;
+  width:1px; height:100%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.22), transparent);
 }
 .sidebarDesktop.collapsed{
   width: var(--sidebar-w-collapsed);
 }
 
-/* Mobile overlay + drawer */
-.mobileOverlay{
-  display:none;
-}
-.sidebarMobileDrawer{
-  display:none;
-}
-
-/* Main area */
-.mainArea{
-  flex:1;
+/* Conteúdo interno da sidebar */
+.sidebar{
+  height: 100%;
   display:flex;
-  flex-direction: column;
-  min-width: 0;
-  width: 100%;
+  flex-direction:column;
+  padding: 12px;
+  gap: 12px;
+  color: var(--nav-text);
 }
 
+.sidebarNav{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  overflow:auto;
+  padding-right: 4px;
+}
+
+.navItem{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  text-decoration:none;
+  color: var(--nav-text);
+  border: 1px solid transparent;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.navItem:hover,
+.navItem.active{
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+}
+
+/* ícone amarelo no hover/ativo */
+.navItem:hover .navIcon,
+.navItem.active .navIcon{
+  color: var(--accent);
+}
+
+.navIcon{
+  width: 28px;
+  display:flex;
+  justify-content:center;
+  color: var(--nav-text);
+}
+
+.navLabel{
+  font-size: 14px;
+  color: var(--nav-text);
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+/* Footer */
+.sidebarFooter{
+  margin-top:auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+.footerHint{
+  font-size: 12px;
+  color: var(--nav-muted);
+}
+
+/* =========================
+   5) TOPBAR
+========================= */
 .topBar{
-  width: 100%;
-  margin: 0;
-  border-left: 0;
-  border-right: 0;
+  width:100%;
   height: var(--topbar-h);
   display:flex;
   align-items:center;
   justify-content: space-between;
   padding: 0 16px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(15,22,38,0.65);
-  backdrop-filter: blur(10px);
+
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.10)),
+    linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+  color: var(--nav-text);
+
   position: sticky;
   top: 0;
   z-index: 5;
+
+  backdrop-filter: blur(10px);
 }
 
 .topLeft{
@@ -86,149 +269,87 @@ body{
   gap: 10px;
   min-width: 0;
 }
-
 .pageTitle{
   font-size: 16px;
   font-weight: 650;
+  color: var(--nav-text);
   white-space: nowrap;
   overflow:hidden;
   text-overflow: ellipsis;
 }
-
 .topRight{
   display:flex;
   align-items:center;
   gap: 10px;
 }
-.topPlaceholder{
-  font-size: 13px;
-  color: var(--muted);
-  padding: 8px 10px;
-  border: 1px dashed var(--line);
-  border-radius: 999px;
-}
 
-.pageContent{
-  padding: 16px;
-  min-width: 0;
-}
-
-/* Sidebar inner */
-.sidebar{
-  height: 100%;
-  display:flex;
-  flex-direction: column;
-  padding: 12px;
-  gap: 12px;
-}
-
-.sidebarHeader{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  min-width: 0;
-}
-.brandMark{
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid var(--line);
-  font-weight: 800;
-}
-.brandText{
-  font-weight: 700;
-  white-space: nowrap;
-  overflow:hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebarNav{
-  display:flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow: auto;
-  padding-right: 4px;
-}
-
-.navItem{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  padding: 10px 10px;
-  border-radius: 12px;
-  text-decoration: none;
-  color: var(--text);
-  border: 1px solid transparent;
-}
-.navItem:hover{
+/* =========================
+   6) BOTÕES DAS BARRAS (NAVEGAÇÃO)
+   - por defeito: 80% opacidade
+   - hover/ativo: amarelo
+========================= */
+.sidebar .iconBtn,
+.topBar .iconBtn{
+  border: 1px solid rgba(255,255,255,0.16);
   background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.08);
-}
-.navItem.active{
-  background: rgba(255,255,255,0.10);
-  border-color: rgba(255,255,255,0.14);
-}
-
-.navIcon{
-  width: 28px;
-  display:flex;
-  justify-content:center;
-}
-.navLabel{
-  font-size: 14px;
-  color: rgba(255,255,255,0.90);
-  white-space: nowrap;
-  overflow:hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebarFooter{
-  margin-top:auto;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
-}
-.footerHint{
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.iconBtn{
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,0.06);
-  color: var(--text);
+  color: var(--nav-text);
   border-radius: 12px;
   padding: 8px 10px;
   cursor:pointer;
-}
-.iconBtn:hover{
-  background: rgba(255,255,255,0.10);
+  opacity: 0.8;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease, opacity 140ms ease;
 }
 
-/* Responsive */
+/* hover e “selecionado” */
+.sidebar .iconBtn:hover,
+.topBar .iconBtn:hover,
+.sidebar .iconBtn.active,
+.topBar .iconBtn.active{
+  opacity: 1;
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+/* =========================
+   7) MOBILE DRAWER + OVERLAY
+   IMPORTANTÍSSIMO: por defeito está escondido no desktop.
+========================= */
+.mobileOverlay{
+  display:none;
+}
+.sidebarMobileDrawer{
+  display:none;
+}
+
+/* helper classes */
 .mobileOnly{ display:none; }
 .desktopOnly{ display:inline-flex; }
 
-@media (max-width: 900px){
-  .sidebarDesktop{
-    display:none;
-  }
+/* =========================
+   8) BREAKPOINTS (ANTI-DUPLICAÇÃO)
+   - Usamos !important para garantir que NADA
+     (outra folha de estilos) faz aparecer as duas sidebars.
+========================= */
 
-  .mobileOnly{ display:inline-flex; }
-  .desktopOnly{ display:none; }
+/* Desktop */
+@media (min-width: 901px){
+  .sidebarDesktop{ display:block !important; }
+  .sidebarMobileDrawer{ display:none !important; }
+  .mobileOverlay{ display:none !important; }
+  .mobileOnly{ display:none !important; }
+  .desktopOnly{ display:inline-flex !important; }
+}
+
+/* Mobile */
+@media (max-width: 900px){
+  .sidebarDesktop{ display:none !important; }
+
+  .mobileOnly{ display:inline-flex !important; }
+  .desktopOnly{ display:none !important; }
 
   .mobileOverlay{
-    display:block;
+    display:block !important;
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.45);
@@ -243,7 +364,7 @@ body{
   }
 
   .sidebarMobileDrawer{
-    display:block;
+    display:block !important;
     position: fixed;
     top: 0;
     left: 0;
@@ -260,63 +381,114 @@ body{
     transform: translateX(0);
   }
 
-  .pageContent{
-    padding: 12px;
-  }
+  .pageContent{ padding: 12px; }
 }
 
-/* Cliente Form layout */
+/* =========================
+   9) (Opcional) Cliente Form layout
+========================= */
 .clienteFormPage{
   padding: 16px;
   width: 100%;
-  max-width: 1200px;   /* controla “o quão largo” pode ficar */
-  margin: 0 auto;      /* centra o conteúdo */
+  max-width: 1200px;
+  margin: 0 auto;
 }
-
 .clienteFormHeader{
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
 }
-
-/* Grid base (1 coluna no mobile) */
 .clienteFormGrid{
   margin-top: 16px;
   display: grid;
   gap: 12px;
   grid-template-columns: 1fr;
 }
-
-/* 2 colunas no desktop */
 @media (min-width: 1100px){
-  .clienteFormGrid{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .clienteFormGrid .span2{
-    grid-column: span 2;
-  }
-}
-/* Corrigir cores do dropdown nativo no tema escuro */
-select{
-  color-scheme: light;        /* força UI do dropdown a "light" */
+  .clienteFormGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .clienteFormGrid .span2{ grid-column: span 2; }
 }
 
-/* garante lista de opções legível */
+/* Dropdown nativo (mantém) */
+select{ color-scheme: light; }
 select option{
   color: #000 !important;
   background: #fff !important;
 }
-
-/* selecionada (muito mais consistente que hover) */
 select option:checked{
   color: #fff !important;
   background: #1e293b !important;
 }
-
-/* hover (pode não funcionar em todos os browsers) */
 select option:hover{
   color: #fff !important;
   background: #1e293b !important;
+}
+
+/* =========================
+   10) CORREÇÕES DE CONTEÚDO (ANTI-AMARELO)
+========================= */
+.pageContent{
+  color: var(--text);
+}
+
+/* força TODOS os textos dentro da área de trabalho a não herdarem accent */
+.pageContent *{
+  color: inherit;
+}
+
+/* textos informativos / secundários */
+.pageContent p,
+.pageContent small,
+.pageContent .muted{
+  color: var(--muted);
+}
+
+/* =========================
+   11) CONTROLOS DO CONTEÚDO (INPUT/SELECT)
+========================= */
+
+/* Pesquisa */
+.pageContent input,
+.pageContent textarea{
+  background: rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.96);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 12px;
+  padding: 10px 14px;
+  outline: none;
+}
+
+.pageContent input::placeholder,
+.pageContent textarea::placeholder{
+  color: rgba(255,255,255,0.70);
+}
+
+/* Select (Ativos/Inativos/Todos) */
+.pageContent select{
+  background: rgba(255,255,255,0.92);
+  color: #0b1222;
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
+  outline: none;
+}
+
+.pageContent select:hover{
+  background: #fff;
+  border-color: rgba(255,255,255,0.55);
+}
+
+/* =========================
+   12) AMARELO SÓ NA NAVEGAÇÃO
+========================= */
+.sidebar a:hover,
+.topBar a:hover{
+  color: var(--accent);
+}
+
+/* no conteúdo, nunca amarelo */
+.pageContent a:hover{
+  color: var(--text);
 }
