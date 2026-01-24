@@ -1,71 +1,76 @@
 import { NavLink } from "react-router-dom";
+import { NAV_ITEMS } from "../../app/nav.config";
 
-const navItems = [
-  { to: "/", label: "Home", icon: "🏠" },
-  { to: "/obras", label: "Obras", icon: "🏗️" },
-  { to: "/clientes", label: "Clientes", icon: "👤" },
-  { to: "/fornecedores", label: "Fornecedores", icon: "🚚" },
-  { to: "/funcionarios", label: "Funcionários", icon: "🧑‍🏭" },
-  { to: "/artigos-compra", label: "Artigos/Serviços (Compra)", icon: "🧾" },
-  { to: "/artigos-venda", label: "Artigos/Serviços (Venda)", icon: "🛒" },
-  { to: "/producao", label: "Produção", icon: "🏭" },
-  { to: "/montagens-entregas", label: "Montagens/Entregas", icon: "📦" },
-];
 
 export default function Sidebar({
-  variant, // "desktop" | "mobile"
-  isCollapsed,
-  onToggleCollapse,
-  onNavigate,
+  variant = "desktop",            // "desktop" | "mobile"
+  isCollapsed = false,            // true/false
+  onToggleCollapse = () => {},    // toggle do colapso (desktop)
+  onNavigate = () => {},          // usado para fechar drawer no mobile
 }) {
   return (
-    <div className={`sidebar ${variant}`}>
+    <aside className={`sidebar ${variant} ${isCollapsed ? "collapsed" : ""}`}>
+      {/* Header */}
       <div className="sidebarHeader">
         <div className="brand">
           <div className="brandMark">PA</div>
-          {!isCollapsed && <div className="brandText">Perfil Aluval</div>}
+          {!isCollapsed && (
+            <div className="brandText">
+              <div className="brandName">Perfil Aluval</div>
+              <div className="brandSub">Gestão</div>
+            </div>
+          )}
         </div>
 
-        {variant === "desktop" && (
-          <button className="iconBtn" onClick={onToggleCollapse} title="Colapsar/Expandir">
+        {/*{variant === "desktop" && (
+          <button
+            type="button"
+            className="iconBtn"
+            onClick={onToggleCollapse}
+            title={isCollapsed ? "Expandir" : "Colapsar"}
+          >
             {isCollapsed ? "»" : "«"}
           </button>
-        )}
-
-        {variant === "mobile" && (
-          <button className="iconBtn" onClick={onNavigate} title="Fechar">
-            ✕
-          </button>
-        )}
+        )}*/}
       </div>
 
+      {/* Nav */}
       <nav className="sidebarNav">
-        {navItems.map((it) => (
+        {NAV_ITEMS.map((it) => (
           <NavLink
             key={it.to}
             to={it.to}
-            className={({ isActive }) =>
-              `navItem ${isActive ? "active" : ""} ${isCollapsed ? "collapsed" : ""}`
-            }
             onClick={onNavigate}
+            className={({ isActive }) =>
+              [
+                "navItem",
+                isActive ? "active" : "",
+                isCollapsed ? "isCollapsed" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")
+            }
           >
             <span className="navIcon" aria-hidden="true">
               {it.icon}
             </span>
+
             {!isCollapsed && <span className="navLabel">{it.label}</span>}
           </NavLink>
         ))}
       </nav>
 
+      {/* Footer */}
       <div className="sidebarFooter">
         {!isCollapsed ? (
-          <div className="footerHint">v0.1 • Shell</div>
-        ) : (
-          <div className="footerHint" title="v0.1 • Shell">
-            •
+          <div className="sidebarMeta">
+            <div className="metaTitle">Sessão</div>
+            <div className="metaSub">Utilizador</div>
           </div>
+        ) : (
+          <div className="sidebarMetaCollapsed">•</div>
         )}
       </div>
-    </div>
+    </aside>
   );
 }
