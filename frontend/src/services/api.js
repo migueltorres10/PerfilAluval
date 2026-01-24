@@ -46,6 +46,8 @@ export const clientesApi = {
   list: ({ status = "active", q = "" } = {}) =>
     request(`/api/clientes?status=${encodeURIComponent(status)}&q=${encodeURIComponent(q)}`),
 
+  
+
   create: (payload) =>
     request("/api/clientes", {
       method: "POST",
@@ -69,4 +71,10 @@ export const clientesApi = {
     request(`/api/clientes/${id}/reativar`, {
       method: "PATCH",
     }),
-};
+  
+  stats: ({ q } = {}) => {
+    const params = new URLSearchParams();
+    if (q && String(q).trim()) params.set("q", String(q).trim());
+    const qs = params.toString();
+    return request(`/api/clientes/stats${qs ? `?${qs}` : ""}`);
+},};

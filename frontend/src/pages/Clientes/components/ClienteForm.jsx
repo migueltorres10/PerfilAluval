@@ -88,8 +88,8 @@ export default function ClienteForm({
           <TextInput name="nomeComercial" value={form.nomeComercial} onChange={onChange} placeholder="Ex: Aluval" />
         </FormField>
 
-        <FormField label="NIF" error={errors.nif}>
-          <TextInput name="nif" value={form.nif} onChange={onChange} placeholder="NIF" />
+        <FormField label="NIF*" error={errors.nif}>
+          <TextInput name="nif" value={form.nif} maxLength={20} onChange={onChange} placeholder="NIF" />
         </FormField>
 
         <FormField label="Email" error={errors.email}>

@@ -198,19 +198,17 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// GET lista de clientes (status=active|inactive|all, q=pesquisa)
-router.get("/", async (req, res) => {
+// GET /api/clientes/stats? q=...
+router.get("/stats", async (req, res) => {
   try {
     const pool = await getPool();
 
-    const status = String(req.query.status || "active").toLowerCase(); // default: active
-    const q = String(req.query.q || "").trim();
+    const q = String(req.query.q ?? "").trim();
+    if (q.length > 200) {
+      return res.status(400).json({ error: "Parâmetro 'q' demasiado longo (máx 200 caracteres)." });
+    }
 
     let where = "1=1";
-    if (status === "active") where += " AND Ativo = 1";
-    else if (status === "inactive") where += " AND Ativo = 0";
-    // status === "all" -> sem filtro
-
     const hasQ = q.length > 0;
     if (hasQ) {
       where += ` AND (
@@ -225,6 +223,93 @@ router.get("/", async (req, res) => {
       .input("q", sql.NVarChar(200), hasQ ? `%${q}%` : null)
       .query(`
         SELECT
+          SUM(CASE WHEN Ativo = 1 THEN 1 ELSE 0 END) AS Ativos,
+          SUM(CASE WHEN Ativo = 0 THEN 1 ELSE 0 END) AS Inativos,
+          COUNT(1) AS Total
+        FROM rg.Clientes
+        WHERE ${where};
+      `);
+
+    res.json(r.recordset[0] || { Ativos: 0, Inativos: 0, Total: 0 });
+  } catch (e) {
+    res.status(500).json({ error: "Erro ao obter stats de clientes", detail: e.message });
+  }
+});
+
+// GET lista de clientes
+// status=active|inactive|all
+// q=pesquisa
+// orderBy=ClienteID|Nome|NIF|NomeLocalidade|DataCriacao|DataAtualizacao
+// orderDir=asc|desc
+// page=1..n  (opcional)
+// pageSize=1..200 (opcional)
+router.get("/", async (req, res) => {
+  try {
+    const pool = await getPool();
+
+    // ---- status (validação) ----
+    const statusRaw = String(req.query.status ?? "active").toLowerCase();
+    const allowedStatus = new Set(["active", "inactive", "all"]);
+    if (!allowedStatus.has(statusRaw)) {
+      return res.status(400).json({ error: "Parâmetro 'status' inválido. Use: active | inactive | all." });
+    }
+
+    // ---- q (sanitização simples) ----
+    const q = String(req.query.q ?? "").trim();
+    if (q.length > 200) {
+      return res.status(400).json({ error: "Parâmetro 'q' demasiado longo (máx 200 caracteres)." });
+    }
+
+    // ---- ordenação (whitelist) ----
+    const orderByRaw = String(req.query.orderBy ?? "ClienteID");
+    const orderDirRaw = String(req.query.orderDir ?? "desc").toLowerCase();
+
+    const orderByMap = {
+      ClienteID: "ClienteID",
+      Nome: "Nome",
+      NIF: "NIF",
+      NomeLocalidade: "NomeLocalidade",
+      DataCriacao: "DataCriacao",
+      DataAtualizacao: "DataAtualizacao",
+      Ativo: "Ativo",
+    };
+
+    const orderBy = orderByMap[orderByRaw] || orderByMap.ClienteID;
+    const orderDir = orderDirRaw === "asc" ? "ASC" : "DESC";
+
+    // ---- paginação (opcional) ----
+    const hasPaging = req.query.page !== undefined || req.query.pageSize !== undefined;
+
+    let page = Number(req.query.page ?? 1);
+    let pageSize = Number(req.query.pageSize ?? 50);
+
+    if (!Number.isFinite(page) || page < 1) page = 1;
+    if (!Number.isFinite(pageSize) || pageSize < 1) pageSize = 50;
+    if (pageSize > 200) pageSize = 200;
+
+    const offset = (page - 1) * pageSize;
+
+    // ---- WHERE ----
+    let where = "1=1";
+    if (statusRaw === "active") where += " AND Ativo = 1";
+    else if (statusRaw === "inactive") where += " AND Ativo = 0";
+    // all -> sem filtro
+
+    const hasQ = q.length > 0;
+    if (hasQ) {
+      where += ` AND (
+        Nome LIKE @q OR
+        NIF LIKE @q OR
+        NomeLocalidade LIKE @q
+      )`;
+    }
+
+    const request = pool.request().input("q", sql.NVarChar(200), hasQ ? `%${q}%` : null);
+
+    if (!hasPaging) {
+      // ✅ compatível com o frontend atual: devolve array
+      const r = await request.query(`
+        SELECT
           ClienteID,
           Nome,
           NIF,
@@ -237,10 +322,42 @@ router.get("/", async (req, res) => {
           DataAtualizacao
         FROM rg.Clientes
         WHERE ${where}
-        ORDER BY ClienteID DESC
+        ORDER BY ${orderBy} ${orderDir}
       `);
 
-    res.json(r.recordset);
+      return res.json(r.recordset);
+    }
+
+    // ✅ paginado: devolve { items, total, page, pageSize }
+    request.input("offset", sql.Int, offset).input("pageSize", sql.Int, pageSize);
+
+    const r = await request.query(`
+      SELECT COUNT(1) AS Total
+      FROM rg.Clientes
+      WHERE ${where};
+
+      SELECT
+        ClienteID,
+        Nome,
+        NIF,
+        NomeLocalidade,
+        Email,
+        Telefone,
+        Telemovel,
+        Ativo,
+        DataCriacao,
+        DataAtualizacao
+      FROM rg.Clientes
+      WHERE ${where}
+      ORDER BY ${orderBy} ${orderDir}
+      OFFSET @offset ROWS
+      FETCH NEXT @pageSize ROWS ONLY;
+    `);
+
+    const total = r.recordsets?.[0]?.[0]?.Total ?? 0;
+    const items = r.recordsets?.[1] ?? [];
+
+    return res.json({ items, total, page, pageSize });
   } catch (e) {
     res.status(500).json({ error: "Erro ao listar clientes", detail: e.message });
   }
@@ -320,5 +437,7 @@ router.patch("/:id/reativar", async (req, res) => {
     res.status(500).json({ error: "Erro ao reativar cliente", detail: e.message });
   }
 });
+
+
 
 module.exports = router;

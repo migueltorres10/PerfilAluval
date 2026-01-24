@@ -42,9 +42,32 @@ export default function ClientesListPage() {
     }
   }, [status, qDebounced]);
 
+  const [stats, setStats] = useState({
+    Ativos: 0,
+    Inativos: 0,
+    Total: 0,
+  });
+
   useEffect(() => {
     load();
-  }, [load]);
+    loadStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qDebounced, status]);
+
+  async function loadStats() {
+    try {
+      const data = await clientesApi.stats({ q: qDebounced });
+
+      // normalização defensiva
+      setStats({
+        Ativos: Number(data?.Ativos ?? data?.ativos ?? 0),
+        Inativos: Number(data?.Inativos ?? data?.inativos ?? 0),
+        Total: Number(data?.Total ?? data?.total ?? 0),
+      });
+    } catch (err) {
+      console.error("Erro a carregar stats:", err);
+    }
+  }
 
   async function onToggleAtivo(cliente) {
     const id = cliente.ClienteID;
@@ -100,15 +123,31 @@ export default function ClientesListPage() {
           placeholder="Pesquisar por nome, NIF ou localidade…"
         />
 
-        <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="active">Ativos</option>
-          <option value="inactive">Inativos</option>
-          <option value="all">Todos</option>
-        </select>
-
-        <button type="button" onClick={load} disabled={loading}>
-          {loading ? "A atualizar..." : "Atualizar"}
+      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
+        <button
+          type="button"
+          onClick={() => setStatus("active")}
+          style={{ fontWeight: status === "active" ? 700 : 400 }}
+        >
+          Ativos ({stats.Ativos})
         </button>
+
+        <button
+          type="button"
+          onClick={() => setStatus("inactive")}
+          style={{ fontWeight: status === "inactive" ? 700 : 400 }}
+        >
+          Inativos ({stats.Inativos})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setStatus("all")}
+          style={{ fontWeight: status === "all" ? 700 : 400 }}
+        >
+          Todos ({stats.Total})
+        </button>
+      </div>
       </div>
 
       {/* mensagens no topo */}
