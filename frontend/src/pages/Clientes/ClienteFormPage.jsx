@@ -4,7 +4,8 @@ import ClienteForm from "./components/ClienteForm";
 import { useClienteCreate } from "./hooks/useClienteCreate";
 import { useClienteEdit } from "./hooks/useClienteEdit";
 import { useClienteDelete } from "./hooks/useClienteDelete";
-import { AlertBox } from "../../components/ui/AlertBox"; // ajusta caminho se necessário
+import { AlertBox } from "../../components/ui/AlertBox";
+import { Button } from "../../components/ui/Button";
 
 export default function ClienteFormPage() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function ClienteFormPage() {
   });
 
   const vmEdit = useClienteEdit(id, {
-    onUpdated: () => {}, // opcional
+    onUpdated: () => { }, // opcional
   });
 
   const vmDelete = useClienteDelete(id, {
@@ -44,12 +45,18 @@ export default function ClienteFormPage() {
         {vmDelete.apiSuccess ? <AlertBox variant="success">{vmDelete.apiSuccess}</AlertBox> : null}
 
         <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-          <button type="button" onClick={() => navigate(-1)} disabled={vmDelete.saving}>
+          <Button type="button" onClick={() => navigate(-1)} disabled={vmDelete.saving}>
             Cancelar
-          </button>
-          <button type="button" onClick={vmDelete.onSubmit} disabled={vmDelete.saving}>
-            {vmDelete.saving ? "A eliminar..." : "Confirmar eliminar"}
-          </button>
+          </Button>
+          <Button
+            type="button"
+            variant="danger"
+            onClick={vmDelete.onSubmit}
+            loading={vmDelete.saving}
+            loadingText="A eliminar..."
+          >
+            Confirmar eliminar
+          </Button>
         </div>
       </div>
     );

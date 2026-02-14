@@ -3,11 +3,7 @@ const router = express.Router();
 
 const { sql, getPool } = require("../db/sql");
 
-function s(v) {
-  if (v === undefined || v === null) return null;
-  const t = String(v).trim();
-  return t.length ? t : null;
-}
+const { s, validateNif, validateEmail, isValidId } = require("../utils/validation");
 
 function validateCliente(payload) {
   const errors = {};
@@ -18,17 +14,15 @@ function validateCliente(payload) {
 
   if (!nome) errors.nome = "Nome é obrigatório.";
   if (!tipo || !["E", "P"].includes(tipo)) errors.tipoCliente = "TipoCliente deve ser 'E' ou 'P'.";
-  if (!Number.isFinite(paisId) || paisId <= 0) errors.paisId = "PaisID inválido.";
+  if (!isValidId(paisId)) errors.paisId = "PaisID inválido.";
 
-const nif = s(payload.nif);
+  const nif = s(payload.nif);
+  const nifError = validateNif(nif);
+  if (nifError) errors.nif = nifError;
 
-if (!nif) {
-  errors.nif = "NIF é obrigatório.";
-} else if (nif.length > 20) {
-  errors.nif = "NIF não pode ter mais de 20 caracteres.";
-}
   const email = s(payload.email);
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Email inválido.";
+  const emailError = validateEmail(email);
+  if (emailError) errors.email = emailError;
 
   return { ok: Object.keys(errors).length === 0, errors };
 }
@@ -98,7 +92,7 @@ router.post("/", async (req, res) => {
 // PUT editar cliente
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Id inválido" });
+  if (!isValidId(id)) return res.status(400).json({ error: "Id inválido" });
 
   const v = validateCliente(req.body);
   if (!v.ok) return res.status(400).json({ errors: v.errors });
@@ -177,7 +171,7 @@ router.put("/:id", async (req, res) => {
 // DELETE (soft delete) cliente
 router.delete("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Id inválido" });
+  if (!isValidId(id)) return res.status(400).json({ error: "Id inválido" });
 
   try {
     const pool = await getPool();
@@ -368,7 +362,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
-    if (!Number.isFinite(id)) {
+    if (!isValidId(id)) {
       return res.status(400).json({ error: "Id inválido" });
     }
 
@@ -417,7 +411,7 @@ router.get("/:id", async (req, res) => {
 // PATCH reativar cliente
 router.patch("/:id/reativar", async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Id inválido" });
+  if (!isValidId(id)) return res.status(400).json({ error: "Id inválido" });
 
   try {
     const pool = await getPool();

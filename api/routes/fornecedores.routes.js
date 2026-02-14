@@ -3,11 +3,7 @@ const router = express.Router();
 
 const { sql, getPool } = require("../db/sql");
 
-function s(v) {
-  if (v === undefined || v === null) return null;
-  const t = String(v).trim();
-  return t.length ? t : null;
-}
+const { s, validateNif, validateEmail, isValidId } = require("../utils/validation");
 
 function validateFornecedor(payload) {
   const errors = {};
@@ -16,17 +12,15 @@ function validateFornecedor(payload) {
   const paisId = Number(payload.paisId);
 
   if (!nome) errors.nome = "Nome é obrigatório.";
- if (!Number.isFinite(paisId) || paisId <= 0) errors.paisId = "PaisID inválido.";
+  if (!isValidId(paisId)) errors.paisId = "PaisID inválido.";
 
-const nif = s(payload.nif);
+  const nif = s(payload.nif);
+  const nifError = validateNif(nif);
+  if (nifError) errors.nif = nifError;
 
-if (!nif) {
-  errors.nif = "NIF é obrigatório.";
-} else if (nif.length > 20) {
-  errors.nif = "NIF não pode ter mais de 20 caracteres.";
-}
   const email = s(payload.email);
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Email inválido.";
+  const emailError = validateEmail(email);
+  if (emailError) errors.email = emailError;
 
   return { ok: Object.keys(errors).length === 0, errors };
 }
@@ -57,24 +51,24 @@ router.post("/", async (req, res) => {
       observacoes: req.body.observacoes ?? null,
     };
 
-  const r = await pool.request()
-    .input("Nome", sql.NVarChar(200), payload.nome)
-    .input("NomeComercial", sql.NVarChar(200), payload.nomeComercial)
-    .input("NIF", sql.NVarChar(20), payload.nif)
-    .input("PaisID", sql.Int, payload.paisId)
-    .input("Email", sql.NVarChar(150), payload.email)
-    .input("Telefone", sql.NVarChar(30), payload.telefone)
-    .input("Telemovel", sql.NVarChar(30), payload.telemovel)
-    .input("CodDistrito", sql.Char(2), payload.codDistrito)
-    .input("CodConcelho", sql.Char(2), payload.codConcelho)
-    .input("NomeLocalidade", sql.NVarChar(150), payload.nomeLocalidade)
-    .input("NumCodPostal", sql.Char(4), payload.numCodPostal)
-    .input("ExtCodPostal", sql.Char(3), payload.extCodPostal)
-    .input("MoradaLinha1", sql.NVarChar(250), payload.moradaLinha1)
-    .input("MoradaLinha2", sql.NVarChar(250), payload.moradaLinha2)
-    .input("Observacoes", sql.NVarChar(sql.MAX), payload.observacoes)
-    .input("Ativo", sql.Bit, 1)
-    .query(`
+    const r = await pool.request()
+      .input("Nome", sql.NVarChar(200), payload.nome)
+      .input("NomeComercial", sql.NVarChar(200), payload.nomeComercial)
+      .input("NIF", sql.NVarChar(20), payload.nif)
+      .input("PaisID", sql.Int, payload.paisId)
+      .input("Email", sql.NVarChar(150), payload.email)
+      .input("Telefone", sql.NVarChar(30), payload.telefone)
+      .input("Telemovel", sql.NVarChar(30), payload.telemovel)
+      .input("CodDistrito", sql.Char(2), payload.codDistrito)
+      .input("CodConcelho", sql.Char(2), payload.codConcelho)
+      .input("NomeLocalidade", sql.NVarChar(150), payload.nomeLocalidade)
+      .input("NumCodPostal", sql.Char(4), payload.numCodPostal)
+      .input("ExtCodPostal", sql.Char(3), payload.extCodPostal)
+      .input("MoradaLinha1", sql.NVarChar(250), payload.moradaLinha1)
+      .input("MoradaLinha2", sql.NVarChar(250), payload.moradaLinha2)
+      .input("Observacoes", sql.NVarChar(sql.MAX), payload.observacoes)
+      .input("Ativo", sql.Bit, 1)
+      .query(`
       INSERT INTO rg.Fornecedores
         (Nome, NomeComercial, NIF, PaisID, Email, Telefone, Telemovel,
         CodDistrito, CodConcelho, NomeLocalidade, NumCodPostal, ExtCodPostal,
@@ -95,7 +89,7 @@ router.post("/", async (req, res) => {
 // PUT editar Fornecedor
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Id inválido" });
+  if (!isValidId(id)) return res.status(400).json({ error: "Id inválido" });
 
   const v = validateFornecedor(req.body);
   if (!v.ok) return res.status(400).json({ errors: v.errors });
@@ -171,7 +165,7 @@ router.put("/:id", async (req, res) => {
 // DELETE (soft delete) Fornecedor
 router.delete("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Id inválido" });
+  if (!isValidId(id)) return res.status(400).json({ error: "Id inválido" });
 
   try {
     const pool = await getPool();
@@ -362,7 +356,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
-    if (!Number.isFinite(id)) {
+    if (!isValidId(id)) {
       return res.status(400).json({ error: "Id inválido" });
     }
 
@@ -410,7 +404,7 @@ router.get("/:id", async (req, res) => {
 // PATCH reativar Fornecedor
 router.patch("/:id/reativar", async (req, res) => {
   const id = Number(req.params.id);
-  if (!Number.isFinite(id) || id <= 0) return res.status(400).json({ error: "Id inválido" });
+  if (!isValidId(id)) return res.status(400).json({ error: "Id inválido" });
 
   try {
     const pool = await getPool();

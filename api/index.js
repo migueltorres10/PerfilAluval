@@ -3,6 +3,8 @@ const cors = require("cors");
 require("dotenv").config();
 console.log(">> API entrypoint: api/index.js");
 
+console.log(">> DB Server Config:", process.env.DB_SERVER);
+
 const app = express();
 app.use(cors());
 app.use(express.json());

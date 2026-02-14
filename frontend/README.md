@@ -1,16 +1,55 @@
-# React + Vite
+# Perfil Aluval - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend application for Perfil Aluval, built with React, Vite, and React Router.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Node.js](https://nodejs.org/) (v16 or higher recommended)
 
-## React Compiler
+## Installation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
 
-## Expanding the ESLint configuration
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Configuration
+
+1. Create a `.env` file in the `frontend` directory (or use `.env.local`):
+   ```bash
+   VITE_API_URL=http://localhost:4000
+   ```
+   *Note: If `VITE_API_URL` is not set, the application defaults to an empty string, which assumes a proxy is set up or the API is on the same origin.*
+
+## Running the Application
+
+To start the development server:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173` (by default).
+
+## Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview the production build
+- `npm run lint` - Run ESLint
+
+## Project Structure
+
+- `src/app` - App configuration (router, etc.)
+- `src/assets` - Static assets
+- `src/components` - Reusable UI components
+- `src/layouts` - Page layouts
+- `src/pages` - Application pages
+- `src/services` - API integration services
+- `src/styles` - Global styles
+- `src/utils` - Utility functions

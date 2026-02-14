@@ -3,6 +3,7 @@ import { FormField } from "../../../components/ui/FormField";
 import { TextInput, SelectInput } from "../../../components/ui/Input";
 import { AlertBox } from "../../../components/ui/AlertBox";
 import EnderecoFields from "./EnderecoFields";
+import { Button } from "../../../components/ui/Button";
 
 export default function ClienteForm({
   form,
@@ -51,7 +52,7 @@ export default function ClienteForm({
           <h1 style={{ margin: 0 }}>{title}</h1>
           <p style={{ margin: "6px 0 0 0", opacity: 0.75 }}>{subtitle}</p>
         </div>
-        <button type="button" onClick={onBack}>Voltar</button>
+        <Button type="button" onClick={onBack}>Voltar</Button>
       </header>
 
       {/* mensagens no topo */}
@@ -134,9 +135,9 @@ export default function ClienteForm({
         </FormField>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-          <button type="submit" disabled={saving}>
-            {saving ? "A guardar..." : submitLabel}
-          </button>
+          <Button type="submit" loading={saving} loadingText="A guardar...">
+            {submitLabel}
+          </Button>
         </div>
       </form>
     </div>
