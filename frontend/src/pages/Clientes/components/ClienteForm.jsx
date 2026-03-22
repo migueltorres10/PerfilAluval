@@ -59,80 +59,88 @@ export default function ClienteForm({
       {apiError && <AlertBox>{apiError}</AlertBox>}
       {apiSuccess && <AlertBox variant="success">{apiSuccess}</AlertBox>}
 
-      <form onSubmit={handleSubmit} className="clienteFormGrid">
-        <div className="col">
-          <FormField label="Tipo de Cliente" error={errors.tipoCliente}>
-            <SelectInput name="tipoCliente" value={form.tipoCliente} onChange={onChange}>
-              <option value="E">E — Empresa</option>
-              <option value="P">P — Particular</option>
-            </SelectInput>
-          </FormField>
+      <form onSubmit={handleSubmit} className="formStack">
+        <div className="card">
+          <h3>Dados Básicos</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <FormField label="Tipo de Cliente" error={errors.tipoCliente}>
+              <SelectInput name="tipoCliente" value={form.tipoCliente} onChange={onChange}>
+                <option value="E">E — Empresa</option>
+                <option value="P">P — Particular</option>
+              </SelectInput>
+            </FormField>
+
+            <FormField label="País *" error={errors.paisId}>
+              <SelectInput name="paisId" value={form.paisId} onChange={onChange} disabled={loadingPaises}>
+                {paises.map((p) => (
+                  <option key={p.PaisID} value={p.PaisID}>{p.NomePT}</option>
+                ))}
+              </SelectInput>
+            </FormField>
+
+            <div style={{ gridColumn: "1 / -1" }}>
+              <FormField label="Nome *" error={errors.nome}>
+                <TextInput name="nome" value={form.nome} onChange={onChange} placeholder="Ex: Miguel Torres / Empresa" />
+              </FormField>
+            </div>
+
+            <FormField label="Nome Comercial" error={errors.nomeComercial}>
+              <TextInput name="nomeComercial" value={form.nomeComercial} onChange={onChange} placeholder="Ex: Aluval" />
+            </FormField>
+
+            <FormField label="NIF*" error={errors.nif}>
+              <TextInput name="nif" value={form.nif} maxLength={20} onChange={onChange} placeholder="NIF" />
+            </FormField>
+          </div>
         </div>
 
-        <FormField label="País *" error={errors.paisId}>
-          <SelectInput name="paisId" value={form.paisId} onChange={onChange} disabled={loadingPaises}>
-            {paises.map((p) => (
-              <option key={p.PaisID} value={p.PaisID}>
-                {p.NomePT}
-              </option>
-            ))}
-          </SelectInput>
-        </FormField>
+        <div className="card">
+          <h3>Contactos & Morada</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <FormField label="Email" error={errors.email}>
+              <TextInput name="email" value={form.email} onChange={onChange} placeholder="Ex: mail@empresa.pt" />
+            </FormField>
 
-        <div className="col span2">
-          <FormField label="Nome *" error={errors.nome}>
-            <TextInput name="nome" value={form.nome} onChange={onChange} placeholder="Ex: Miguel Torres / Empresa" />
-          </FormField>
+            <FormField label="Telefone" error={errors.telefone}>
+              <TextInput name="telefone" value={form.telefone} onChange={onChange} placeholder="Ex: +351 ..." />
+            </FormField>
+
+            <FormField label="Telemóvel" error={errors.telemovel}>
+              <TextInput name="telemovel" value={form.telemovel} onChange={onChange} placeholder="Ex: +351 ..." />
+            </FormField>
+
+            <EnderecoFields
+              form={form}
+              errors={errors}
+              onChange={onChange}
+              distritos={distritos}
+              loadingDistritos={loadingDistritos}
+              concelhos={concelhos}
+              loadingConcelhos={loadingConcelhos}
+            />
+          </div>
         </div>
 
-        <FormField label="Nome Comercial" error={errors.nomeComercial}>
-          <TextInput name="nomeComercial" value={form.nomeComercial} onChange={onChange} placeholder="Ex: Aluval" />
-        </FormField>
-
-        <FormField label="NIF*" error={errors.nif}>
-          <TextInput name="nif" value={form.nif} maxLength={20} onChange={onChange} placeholder="NIF" />
-        </FormField>
-
-        <FormField label="Email" error={errors.email}>
-          <TextInput name="email" value={form.email} onChange={onChange} placeholder="Ex: mail@empresa.pt" />
-        </FormField>
-
-        <FormField label="Telefone" error={errors.telefone}>
-          <TextInput name="telefone" value={form.telefone} onChange={onChange} placeholder="Ex: +351 ..." />
-        </FormField>
-
-        <FormField label="Telemóvel" error={errors.telemovel}>
-          <TextInput name="telemovel" value={form.telemovel} onChange={onChange} placeholder="Ex: +351 ..." />
-        </FormField>
-
-        <EnderecoFields
-          form={form}
-          errors={errors}
-          onChange={onChange}
-          distritos={distritos}
-          loadingDistritos={loadingDistritos}
-          concelhos={concelhos}
-          loadingConcelhos={loadingConcelhos}
-        />
-
-        <FormField label="Observações" error={errors.observacoes}>
-          <textarea
-            name="observacoes"
-            value={form.observacoes}
-            onChange={onChange}
-            placeholder="Notas internas…"
-            style={{
-              padding: "10px 12px",
-              borderRadius: 12,
-              border: "1px solid rgba(255,255,255,0.12)",
-              background: "rgba(255,255,255,0.06)",
-              color: "rgba(255,255,255,0.92)",
-              outline: "none",
-              minHeight: 90,
-              resize: "vertical",
-            }}
-          />
-        </FormField>
+        <div className="card">
+          <FormField label="Observações" error={errors.observacoes}>
+            <textarea
+              name="observacoes"
+              value={form.observacoes}
+              onChange={onChange}
+              placeholder="Notas internas…"
+              style={{
+                padding: "10px 12px",
+                borderRadius: 12,
+                border: "1px solid rgba(255,255,255,0.12)",
+                background: "rgba(255,255,255,0.06)",
+                color: "rgba(255,255,255,0.92)",
+                outline: "none",
+                minHeight: 90,
+                resize: "vertical",
+              }}
+            />
+          </FormField>
+        </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <Button type="submit" loading={saving} loadingText="A guardar...">
