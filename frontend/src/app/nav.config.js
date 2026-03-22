@@ -2,7 +2,21 @@
 
 export const NAV_ITEMS = [
   { to: "/", label: "Home", icon: "🏠" },
-  { to: "/obras", label: "Obras", icon: "🏗️" },
+  {
+    label: "Produção e Obras", icon: "🏗️",
+    subItems: [
+      { to: "/obras", label: "Gestão de Obras", icon: "🏗️" },
+      { to: "/montagens-entregas", label: "Montagens/Entregas", icon: "📦" },
+      { to: "/parametros-obras", label: "Tipos e Estados de Obra", icon: "⚙️" },
+    ]
+  },
+  {
+    label: "Artigos e Serviços", icon: "🛒",
+    subItems: [
+      { to: "/artigos", label: "Gestão de Artigos", icon: "🧾" },
+      { to: "/parametros-artigos", label: "Unidades e Famílias", icon: "⚙️" },
+    ]
+  },
   { to: "/clientes", label: "Clientes", icon: "👤" },
   { to: "/fornecedores", label: "Fornecedores", icon: "🚚" },
   {
@@ -13,10 +27,6 @@ export const NAV_ITEMS = [
       { to: "/tipos-contrato", label: "Tipos de Contrato", icon: "📄" },
     ]
   },
-  { to: "/artigos-compra", label: "Artigos/Serviços (Compra)", icon: "🧾" },
-  { to: "/artigos-venda", label: "Artigos/Serviços (Venda)", icon: "🛒" },
-  { to: "/producao", label: "Produção", icon: "🏭" },
-  { to: "/montagens-entregas", label: "Montagens/Entregas", icon: "📦" },
 ];
 
 export function getPageTitle(path) {

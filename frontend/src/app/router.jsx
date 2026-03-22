@@ -12,6 +12,14 @@ import DepartamentosFuncoesPage from "../pages/DepartamentosFuncoes/Departamento
 import FuncionariosListPage from "../pages/Funcionarios/FuncionariosListPage";
 import FuncionarioFormPage from "../pages/Funcionarios/FuncionarioFormPage";
 
+import ParametrosObrasPage from "../pages/Obras/ParametrosObrasPage";
+import ObrasListPage from "../pages/Obras/ObrasListPage";
+import ObraFormPage from "../pages/Obras/ObraFormPage";
+import ParametrosArtigosPage from "../pages/Artigos/ParametrosArtigosPage";
+
+import ArtigosListPage from "../pages/Artigos/ArtigosListPage";
+import ArtigoFormPage from "../pages/Artigos/ArtigoFormPage";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -38,6 +46,20 @@ export const router = createBrowserRouter([
       { path: "funcionarios/novo", element: <FuncionarioFormPage /> },
       { path: "funcionarios/:id", element: <FuncionarioFormPage /> },
       { path: "funcionarios/:id/eliminar", element: <FuncionarioFormPage /> },
+
+      // Obras (Parâmetros e Lista principal)
+      { path: "parametros-obras", element: <ParametrosObrasPage /> },
+      { path: "obras", element: <ObrasListPage /> },
+      { path: "obras/nova", element: <ObraFormPage /> },
+      { path: "obras/:id", element: <ObraFormPage /> },
+      { path: "obras/:id/eliminar", element: <ObraFormPage /> },
+      
+      // Artigos
+      { path: "parametros-artigos", element: <ParametrosArtigosPage /> },
+      { path: "artigos", element: <ArtigosListPage /> },
+      { path: "artigos/novo", element: <ArtigoFormPage /> },
+      { path: "artigos/:id", element: <ArtigoFormPage /> },
+      { path: "artigos/:id/eliminar", element: <ArtigoFormPage /> },
 
     ],
   },

@@ -31,6 +31,18 @@ app.use("/api/funcoes", require("./routes/funcoes.routes"));
 app.use("/api/tipos-contrato", require("./routes/tiposcontrato.routes"));
 app.use("/api/funcionarios", require("./routes/funcionarios.routes"));
 
+// Novos módulos Auxiliares: Obras e Artigos/Serviços
+app.use("/api/obras-estados", require("./routes/obras-estados.routes"));
+app.use("/api/obras-tipos", require("./routes/obras-tipos.routes"));
+app.use("/api/artigo-unidades", require("./routes/artigo-unidades.routes"));
+app.use("/api/artigo-familias", require("./routes/artigo-familias.routes"));
+
+// Módulos Principais
+app.use("/api/artigos", require("./routes/artigos.routes"));
+app.use("/api/artigos-fornecedores", require("./routes/artigos-fornecedores.routes"));
+app.use("/api/obras", require("./routes/obras.routes"));
+app.use("/api/obras-artigos", require("./routes/obras-artigos.routes"));
+
 // (opcional) 404 JSON
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

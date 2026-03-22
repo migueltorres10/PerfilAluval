@@ -148,3 +148,68 @@ export const funcionariosApi = {
   update: (id, payload) => request(`/api/funcionarios/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   remove: (id) => request(`/api/funcionarios/${id}`, { method: "DELETE" }),
 };
+
+// --- MÓDULO OBRAS ---
+export const obrasEstadosApi = {
+  list: () => request("/api/obras-estados"),
+  getById: (id) => request(`/api/obras-estados/${id}`),
+  create: (payload) => request("/api/obras-estados", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/obras-estados/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/obras-estados/${id}`, { method: "DELETE" }),
+};
+
+export const obrasTiposApi = {
+  list: () => request("/api/obras-tipos"),
+  getById: (id) => request(`/api/obras-tipos/${id}`),
+  create: (payload) => request("/api/obras-tipos", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/obras-tipos/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/obras-tipos/${id}`, { method: "DELETE" }),
+};
+
+export const obrasApi = {
+  list: () => request("/api/obras"),
+  getById: (id) => request(`/api/obras/${id}`),
+  create: (payload) => request("/api/obras", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/obras/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/obras/${id}`, { method: "DELETE" }),
+};
+
+export const obrasArtigosApi = {
+  listByObra: (id) => request(`/api/obras-artigos/por-obra/${id}`),
+  create: (payload) => request("/api/obras-artigos", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/obras-artigos/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/obras-artigos/${id}`, { method: "DELETE" }),
+};
+
+// --- MÓDULO ARTIGOS ---
+export const artigoUnidadesApi = {
+  list: () => request("/api/artigo-unidades"),
+  getById: (id) => request(`/api/artigo-unidades/${id}`),
+  create: (payload) => request("/api/artigo-unidades", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/artigo-unidades/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/artigo-unidades/${id}`, { method: "DELETE" }),
+};
+
+export const artigoFamiliasApi = {
+  list: () => request("/api/artigo-familias"),
+  getById: (id) => request(`/api/artigo-familias/${id}`),
+  create: (payload) => request("/api/artigo-familias", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/artigo-familias/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/artigo-familias/${id}`, { method: "DELETE" }),
+};
+
+export const artigosApi = {
+  list: () => request("/api/artigos"),
+  getById: (id) => request(`/api/artigos/${id}`),
+  create: (payload) => request("/api/artigos", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/artigos/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/artigos/${id}`, { method: "DELETE" }),
+};
+
+export const artigosFornecedoresApi = {
+  listByArtigo: (id) => request(`/api/artigos-fornecedores/por-artigo/${id}`),
+  listByFornecedor: (id) => request(`/api/artigos-fornecedores/por-fornecedor/${id}`),
+  create: (payload) => request("/api/artigos-fornecedores", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/artigos-fornecedores/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/artigos-fornecedores/${id}`, { method: "DELETE" }),
+};
