@@ -114,4 +114,37 @@ export const fornecedoresApi = {
     if (q && String(q).trim()) params.set("q", String(q).trim());
     const qs = params.toString();
     return request(`/api/fornecedores/stats${qs ? `?${qs}` : ""}`);
-},};
+  },
+};
+
+export const departamentosApi = {
+  list: () => request("/api/departamentos"),
+  getById: (id) => request(`/api/departamentos/${id}`),
+  create: (payload) => request("/api/departamentos", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/departamentos/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/departamentos/${id}`, { method: "DELETE" }),
+};
+
+export const funcoesApi = {
+  list: () => request("/api/funcoes"),
+  getById: (id) => request(`/api/funcoes/${id}`),
+  create: (payload) => request("/api/funcoes", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/funcoes/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/funcoes/${id}`, { method: "DELETE" }),
+};
+
+export const tiposContratoApi = {
+  list: () => request("/api/tipos-contrato"),
+  getById: (id) => request(`/api/tipos-contrato/${id}`),
+  create: (payload) => request("/api/tipos-contrato", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/tipos-contrato/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/tipos-contrato/${id}`, { method: "DELETE" }),
+};
+
+export const funcionariosApi = {
+  list: () => request("/api/funcionarios"),
+  getById: (id) => request(`/api/funcionarios/${id}`),
+  create: (payload) => request("/api/funcionarios", { method: "POST", body: JSON.stringify(payload) }),
+  update: (id, payload) => request(`/api/funcionarios/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  remove: (id) => request(`/api/funcionarios/${id}`, { method: "DELETE" }),
+};

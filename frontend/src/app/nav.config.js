@@ -5,7 +5,14 @@ export const NAV_ITEMS = [
   { to: "/obras", label: "Obras", icon: "🏗️" },
   { to: "/clientes", label: "Clientes", icon: "👤" },
   { to: "/fornecedores", label: "Fornecedores", icon: "🚚" },
-  { to: "/funcionarios", label: "Funcionários", icon: "🧑‍🏭" },
+  {
+    label: "Recursos Humanos", icon: "👥",
+    subItems: [
+      { to: "/funcionarios", label: "Funcionários", icon: "🧑‍🏭" },
+      { to: "/departamentos-funcoes", label: "Funções e Departamentos", icon: "🏢" },
+      { to: "/tipos-contrato", label: "Tipos de Contrato", icon: "📄" },
+    ]
+  },
   { to: "/artigos-compra", label: "Artigos/Serviços (Compra)", icon: "🧾" },
   { to: "/artigos-venda", label: "Artigos/Serviços (Venda)", icon: "🛒" },
   { to: "/producao", label: "Produção", icon: "🏭" },

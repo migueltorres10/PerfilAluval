@@ -26,6 +26,10 @@ app.use("/api/distritos", require("./routes/distritos.routes"));
 app.use("/api/concelhos", require("./routes/concelhos.routes"));
 app.use("/api/clientes", require("./routes/clientes.routes"));
 app.use("/api/fornecedores", require("./routes/fornecedores.routes"));
+app.use("/api/departamentos", require("./routes/departamentos.routes"));
+app.use("/api/funcoes", require("./routes/funcoes.routes"));
+app.use("/api/tipos-contrato", require("./routes/tiposcontrato.routes"));
+app.use("/api/funcionarios", require("./routes/funcionarios.routes"));
 
 // (opcional) 404 JSON
 app.use((req, res) => {
