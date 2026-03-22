@@ -14,8 +14,8 @@ export default function FuncionarioForm({
   const [form, setForm] = useState(initialData || {
     nome: "", dataNascimento: "", nif: "", numeroSegurancaSocial: "", numeroCartaoCidadao: "",
     email: "", telefone: "", telemovel: "", 
-    moradaLinha1: "", moradaLinha2: "", nomeLocalidade: "", numCodPostal: "", extCodPostal: "", codDistrito: "", codConcelho: "", paisId: 178, // 178 = Portugal
-    funcaoId: "", departamentoId: "", tipoContratoId: "", dataAdmissao: "", dataSaida: "", salarioBaseMensal: "",
+    moradaLinha1: "", moradaLinha2: "", nomeLocalidade: "", numCodPostal: "", extCodPostal: "", codDistrito: "", codConcelho: "", paisId: "", 
+    funcaoId: "", departamentoId: "", tipoContratoId: "", dataAdmissao: new Date().toISOString().split("T")[0], dataSaida: "", salarioBaseMensal: "",
     observacoes: "", ativo: 1
   });
 
@@ -29,6 +29,15 @@ export default function FuncionarioForm({
         paisesApi.list(), distritosApi.list(), departamentosApi.list(), funcoesApi.list(), tiposContratoApi.list()
       ]);
       setLookups(prev => ({ ...prev, paises: ps||[], distritos: ds||[], departamentos: dt||[], funcoes: fn||[], tiposContrato: tc||[] }));
+      
+      // Auto-select Portugal if not editing and no country selected
+      if (!isEditing && !form.paisId && ps && ps.length > 0) {
+        const pt = ps.find(p => p.ISO2 === "PT" || p.NomePT === "Portugal");
+        if (pt) {
+            setForm(prev => ({ ...prev, paisId: pt.PaisID }));
+        }
+      }
+
       if (form.codDistrito) {
         carregarConcelhos(form.codDistrito);
       }
@@ -158,8 +167,11 @@ export default function FuncionarioForm({
                </select>
              </div>
              <div className="formGroup">
-               <label>Salário Base (€)</label>
-               <input type="number" step="0.01" value={form.salarioBaseMensal} onChange={e => handleChange("salarioBaseMensal", e.target.value)} />
+               <label>Salário Base</label>
+               <div className="inputAffixWrapper">
+                 <input type="number" step="0.01" value={form.salarioBaseMensal} onChange={e => handleChange("salarioBaseMensal", e.target.value)} />
+                 <span className="inputAffix">€</span>
+               </div>
              </div>
              <div className="formGroup">
                <label>Data Admissão</label>

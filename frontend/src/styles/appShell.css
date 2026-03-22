@@ -664,3 +664,102 @@ select option:hover{
 .pageContent a:hover{
   color: var(--text);
 }
+
+/* =========================
+   12) REUSABLE FORM COMPONENTS 
+========================= */
+.formStack {
+  max-width: 1000px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 1px dashed rgba(255,255,255,0.15);
+  padding-bottom: 10px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.3px;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  border-color: var(--accent-border);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* =========================
+   DATE PICKER AESTHETICS 
+========================= */
+.formGroup input[type="date"] {
+  color-scheme: dark; /* Força o ícone e popup nativo no Dark Mode */
+  cursor: text;
+}
+.formGroup input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(1);
+  opacity: 0.5;
+  transition: opacity 150ms ease;
+}
+.formGroup input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* =========================
+   INPUT AFFIX (ex: Salário €)
+========================= */
+.inputAffixWrapper {
+  display: flex;
+  align-items: stretch;
+}
+.inputAffixWrapper input {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-right: 0 !important;
+}
+.inputAffixWrapper .inputAffix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-left: 0;
+  border-radius: 0 12px 12px 0;
+  color: rgba(255,255,255,0.75);
+  font-weight: 600;
+  user-select: none;
+}
